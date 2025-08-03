@@ -1,36 +1,125 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Feel Platform - Copilote Digital des Professionnels Dentaires
 
-## Getting Started
+## 🚀 État Actuel du Projet
 
-First, run the development server:
+**Version :** 0.1.0  
+**Dernière mise à jour :** $(date)  
+**Statut :** Application fonctionnelle avec interface moderne
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### ✅ Fonctionnalités Implémentées
+
+- **Interface d'accueil moderne** avec design Feel
+- **Header responsive** avec logo et navigation
+- **Section Hero** avec slogan et call-to-action
+- **Palette de couleurs Feel** (vert #7FB069, gris foncé #2C3E50)
+- **Design sobre et professionnel**
+- **Composants UI modernes** (boutons, cartes, badges)
+- **Animations fluides** avec Framer Motion
+
+### 🎨 Design System
+
+**Couleurs principales :**
+- Vert Feel : `#7FB069`
+- Gris foncé : `#2C3E50`
+- Fond beige : `#F5F1E8`
+
+**Technologies utilisées :**
+- Next.js 15.4.5
+- TypeScript
+- Tailwind CSS
+- Radix UI Components
+- Framer Motion
+
+### 📁 Structure du Projet
+
+```
+feel-v2-demo/
+├── src/
+│   ├── app/
+│   │   ├── layout.tsx          # Layout principal avec métadonnées Feel
+│   │   ├── page.tsx            # Page d'accueil avec interface complète
+│   │   └── globals.css         # Styles globaux et variables CSS
+│   ├── components/
+│   │   └── ui/                 # Composants UI réutilisables
+│   └── lib/                    # Utilitaires et constantes
+├── public/
+│   └── logos/                  # Logos Feel et Smile by Feel
+├── tailwind.config.js          # Configuration Tailwind avec palette Feel
+└── package.json               # Dépendances et scripts
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 🚀 Installation et Démarrage
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Cloner le repository :**
+   ```bash
+   git clone https://github.com/Chlomoo/feel-v2-demo.git
+   cd feel-v2-demo
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. **Installer les dépendances :**
+   ```bash
+   npm install
+   ```
 
-## Learn More
+3. **Lancer le serveur de développement :**
+   ```bash
+   npm run dev
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+4. **Accéder à l'application :**
+   - Local : http://localhost:3000 (ou 3001 si 3000 occupé)
+   - Network : http://172.20.10.5:3001
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 🔧 Configuration Git
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+**Workflow recommandé :**
+- Commits au format Conventional Commits : `[type]: description`
+- Types : feat, fix, docs, style, refactor, test, chore
+- Branches : develop pour développement, feature pour nouvelles fonctionnalités
+- Jamais de commits directs sur main
 
-## Deploy on Vercel
+**Alias Git utiles :**
+```bash
+git config --global alias.save 'git add -A && git commit -m'
+git config --global alias.sync 'git pull origin develop && git push origin develop'
+git config --global alias.wip 'git add -A && git commit -m "WIP: work in progress"'
+git config --global alias.undo 'git reset HEAD~1 --mixed'
+git config --global alias.amend 'git commit -a --amend'
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 📝 Notes de Développement
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Dernières modifications :**
+- ✅ Mise à jour des métadonnées avec branding Feel
+- ✅ Configuration de la langue en français
+- ✅ Interface d'accueil complète et responsive
+
+**Prochaines étapes suggérées :**
+1. Amélioration de l'UI selon les préférences (sobre, classy, minimaliste)
+2. Intégration de la police 'Feel' pour la cohérence de marque
+3. Optimisation des performances
+4. Ajout de nouvelles fonctionnalités
+
+### 🐛 Dépannage
+
+**Si l'application ne s'affiche pas correctement :**
+1. Vérifier que le serveur fonctionne : `npm run dev`
+2. Rafraîchir le navigateur (Ctrl+F5)
+3. Vérifier les logs dans la console
+4. Redémarrer le serveur si nécessaire
+
+**Ports utilisés :**
+- Port par défaut : 3000
+- Port de secours : 3001 (si 3000 occupé)
+
+### 📞 Support
+
+Pour toute question ou problème, consulter :
+- La documentation Next.js
+- Les logs du serveur de développement
+- Le repository GitHub pour l'historique des modifications
+
+---
+
+**Feel Platform** - Le copilote digital des professionnels dentaires  
+*UNE seule plateforme pour toute l'équipe, ZÉRO perte de temps*
