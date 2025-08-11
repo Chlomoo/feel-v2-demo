@@ -111,7 +111,7 @@ export default function SignInPage() {
               {/* Colonne gauche - Sélection profil (70%) */}
               <div className="p-8 lg:p-12 overflow-y-auto">
                 <div className="mb-8 text-center">
-                  <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
+                  <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent mb-4">
                     Connexion Feel
                   </h1>
                   <p className="text-lg text-gray-600 leading-relaxed">
@@ -170,72 +170,72 @@ export default function SignInPage() {
               </div>
 
               {/* Colonne droite - Informations sécurité (30%) */}
-              <div className="bg-gradient-to-br from-feel-primary-50 to-feel-primary-100 p-8 lg:p-12 border-l border-feel-primary-200">
+              <div className="bg-gradient-to-br from-green-50 via-blue-50 to-green-100 p-8 lg:p-12 border-l-2 border-green-200">
                 <div className="h-full flex flex-col justify-center">
                   <div className="text-center mb-12">
-                    <div className="w-20 h-20 bg-feel-primary-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                      <Lock className="h-10 w-10 text-feel-primary-600" />
+                    <div className="w-20 h-20 bg-gradient-to-br from-green-100 to-blue-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                      <Lock className="h-10 w-10 text-green-600" />
                     </div>
-                    <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
+                    <h2 className="text-2xl lg:text-3xl font-bold text-green-800 mb-4">
                       Sécurité Feel
                     </h2>
-                    <p className="text-gray-600 text-lg">
+                    <p className="text-green-700 text-lg font-medium">
                       Votre sécurité est notre priorité
                     </p>
                   </div>
 
                   <div className="space-y-8">
                     <div className="flex items-start space-x-4">
-                      <div className="w-10 h-10 bg-feel-primary-200 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-feel-primary-700 font-semibold text-sm">1</span>
+                      <div className="w-10 h-10 bg-gradient-to-br from-green-400 to-green-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+                        <span className="text-white font-bold text-sm">1</span>
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900 mb-2 text-base">
+                        <h3 className="font-semibold text-green-800 mb-2 text-base">
                           Vérification professionnelle
                         </h3>
-                        <p className="text-sm text-gray-600 leading-relaxed">
+                        <p className="text-sm text-green-700 leading-relaxed">
                           Validation de votre identité professionnelle selon votre profil
                         </p>
                       </div>
                     </div>
 
                     <div className="flex items-start space-x-4">
-                      <div className="w-10 h-10 bg-feel-primary-200 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-feel-primary-700 font-semibold text-sm">2</span>
+                      <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+                        <span className="text-white font-bold text-sm">2</span>
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900 mb-2 text-base">
+                        <h3 className="font-semibold text-blue-800 mb-2 text-base">
                           Accès sécurisé
                         </h3>
-                        <p className="text-sm text-gray-600 leading-relaxed">
+                        <p className="text-sm text-blue-700 leading-relaxed">
                           Connexion OAuth sécurisée avec Google ou Apple
                         </p>
                       </div>
                     </div>
 
                     <div className="flex items-start space-x-4">
-                      <div className="w-10 h-10 bg-feel-primary-200 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-feel-primary-700 font-semibold text-sm">3</span>
+                      <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-md">
+                        <span className="text-white font-bold text-sm">3</span>
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900 mb-2 text-base">
+                        <h3 className="font-semibold text-green-800 mb-2 text-base">
                           Dashboard personnalisé
                         </h3>
-                        <p className="text-sm text-gray-600 leading-relaxed">
+                        <p className="text-sm text-green-700 leading-relaxed">
                           Interface adaptée à votre profil professionnel
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="mt-12 pt-6 border-t border-feel-primary-200">
-                    <p className="text-xs text-gray-500 text-center leading-relaxed">
+                  <div className="mt-12 pt-6 border-t border-green-200">
+                    <p className="text-xs text-green-600 text-center leading-relaxed">
                       En vous connectant, vous acceptez nos{' '}
-                      <Link href="/terms" className="text-feel-primary-600 hover:underline">
+                      <Link href="/terms" className="text-green-700 hover:text-green-800 hover:underline font-medium">
                         conditions d'utilisation
                       </Link>{' '}
                       et notre{' '}
-                      <Link href="/privacy" className="text-feel-primary-600 hover:underline">
+                      <Link href="/privacy" className="text-green-700 hover:text-green-800 hover:underline font-medium">
                         politique de confidentialité
                       </Link>
                     </p>
@@ -249,7 +249,7 @@ export default function SignInPage() {
           <div className="text-center mt-8">
             <p className="text-gray-600 text-lg">
               Pas encore de compte ?{' '}
-              <Link href="/auth/signup" className="text-feel-primary-600 hover:underline font-medium">
+              <Link href="/auth/signup" className="text-green-600 hover:text-green-700 hover:underline font-medium">
                 Créer un compte
               </Link>
             </p>

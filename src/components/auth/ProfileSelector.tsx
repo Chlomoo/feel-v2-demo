@@ -21,8 +21,10 @@ const PROFILES = [
     title: 'Chirurgien-Dentiste',
     description: 'Gérez votre cabinet avec efficacité et simplicité',
     icon: User,
-    color: 'bg-feel-primary-50 border-feel-primary-200',
-    iconColor: 'text-feel-primary-600',
+    color: 'bg-green-50 border-green-200',
+    iconColor: 'text-green-600',
+    borderColor: 'border-green-500',
+    hoverColor: 'hover:bg-green-50 hover:border-green-600',
     features: [
       'Profil praticien et Contrats numériques',
       'Smart Comptabilité',
@@ -40,8 +42,10 @@ const PROFILES = [
     title: 'Directeur Structure',
     description: 'Pilotez votre structure dentaire',
     icon: Shield,
-    color: 'bg-feel-secondary-50 border-feel-secondary-200',
-    iconColor: 'text-feel-secondary-600',
+    color: 'bg-blue-50 border-blue-200',
+    iconColor: 'text-blue-600',
+    borderColor: 'border-blue-500',
+    hoverColor: 'hover:bg-blue-50 hover:border-blue-600',
     features: [
       'Cockpit multi-sites consolidé',
       'Analytics avancées',
@@ -59,8 +63,10 @@ const PROFILES = [
     title: 'Assistante Dentaire',
     description: 'Optimisez votre quotidien professionnel',
     icon: Users,
-    color: 'bg-feel-success-50 border-feel-success-200',
-    iconColor: 'text-feel-success-600',
+    color: 'bg-purple-50 border-purple-200',
+    iconColor: 'text-purple-600',
+    borderColor: 'border-purple-500',
+    hoverColor: 'hover:bg-purple-50 hover:border-purple-600',
     features: [
       'Missions flexibles géolocalisées',
       'Interface mobile optimisée',
@@ -103,15 +109,16 @@ export const ProfileSelector: React.FC<ProfileSelectorProps> = ({
               key={profile.id}
               className={`
                 cursor-pointer transition-all duration-300 hover:shadow-lg
-                ${profile.color} ${isSelected ? 'ring-2 ring-feel-primary-500 shadow-lg' : ''}
-                hover:scale-[1.02] h-full flex flex-col
+                ${profile.color} ${isSelected ? `ring-2 ${profile.borderColor} shadow-lg` : ''}
+                hover:scale-[1.02] h-full flex flex-col border-2 ${profile.borderColor}
+                ${profile.hoverColor}
               `}
               onClick={() => onSelect(profile.id)}
             >
               <CardHeader className="text-center pb-6 flex-shrink-0">
                 <div className={`
                   w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6
-                  ${isSelected ? 'bg-feel-primary-100' : 'bg-white'}
+                  ${isSelected ? 'bg-white shadow-md' : 'bg-white'}
                   transition-all duration-300
                 `}>
                   <Icon className={`h-10 w-10 ${profile.iconColor}`} />
@@ -160,9 +167,9 @@ export const ProfileSelector: React.FC<ProfileSelectorProps> = ({
                   <div className="mb-4">
                     <span className={`
                       inline-block px-3 py-1 rounded-full text-xs font-semibold
-                      ${profile.verification.difficulty === 'Facile' ? 'bg-feel-success-100 text-feel-success-700' :
-                        profile.verification.difficulty === 'Moyen' ? 'bg-feel-warning-100 text-feel-warning-700' :
-                        'bg-feel-danger-100 text-feel-danger-700'}
+                      ${profile.verification.difficulty === 'Facile' ? 'bg-green-100 text-green-700 border border-green-200' :
+                        profile.verification.difficulty === 'Moyen' ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' :
+                        'bg-red-100 text-red-700 border border-red-200'}
                     `}>
                       {profile.verification.difficulty}
                     </span>
@@ -190,14 +197,16 @@ export const ProfileSelector: React.FC<ProfileSelectorProps> = ({
       </div>
 
       {/* Informations supplémentaires */}
-      <div className="bg-feel-primary-50 border border-feel-primary-200 rounded-xl p-8 mt-12">
+      <div className="bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 rounded-xl p-8 mt-12 shadow-sm">
         <div className="flex items-start space-x-4">
-          <AlertTriangle className="h-6 w-6 text-feel-primary-600 mt-1 flex-shrink-0" />
+          <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+            <AlertTriangle className="h-5 w-5 text-green-600" />
+          </div>
           <div>
-            <h3 className="font-semibold text-feel-primary-900 mb-3 text-lg">
+            <h3 className="font-semibold text-green-800 mb-3 text-lg">
               Vérification professionnelle
             </h3>
-            <p className="text-base text-feel-primary-700 leading-relaxed">
+            <p className="text-base text-green-700 leading-relaxed">
               Tous les profils nécessitent une vérification de votre identité professionnelle. 
               Cette vérification est obligatoire pour garantir la sécurité et la conformité de la plateforme Feel.
             </p>
