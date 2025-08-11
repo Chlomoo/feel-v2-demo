@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 
@@ -63,19 +64,20 @@ export default function SignInPage() {
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-3 hover:text-green-600 transition-colors">
               <ArrowLeft className="h-5 w-5" />
-              <span className="text-gray-600">Retour à l'accueil</span>
+              <span className="text-gray-600">Retour à l&apos;accueil</span>
             </Link>
           </div>
         </div>
         
         {/* Logo Feel en haut à droite */}
         <div className="absolute top-4 right-4">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-              <span className="text-white text-sm">💚</span>
-            </div>
-            <span className="text-gray-900 font-semibold text-lg">feel</span>
-          </div>
+          <Image
+            src="/logos/Logo FEEL .png"
+            alt="Feel Logo"
+            width={120}
+            height={40}
+            className="h-8 w-auto"
+          />
         </div>
       </header>
 
@@ -209,7 +211,7 @@ export default function SignInPage() {
               <p className="text-gray-600">
                 Pas encore de compte ?{' '}
                 <Link href="/auth/signup" className="text-green-600 hover:text-green-700 hover:underline font-medium">
-                  S'inscrire
+                  S&apos;inscrire
                 </Link>
               </p>
             </div>

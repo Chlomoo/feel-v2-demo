@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowLeft, Mail, Lock, AlertTriangle, CheckCircle, Shield, User, Users } from 'lucide-react';
 import { FeelButton } from '@/components/Button';
@@ -50,14 +51,25 @@ export default function SignUpPage() {
   return (
     <div className="min-h-screen bg-[#F5F1E8] flex flex-col">
       {/* Header */}
-      <header className="bg-[#F5F1E8] shadow-sm border-b border-gray-200">
+      <header className="bg-[#F5F1E8] shadow-sm border-b border-gray-200 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-3 hover:text-green-600 transition-colors">
               <ArrowLeft className="h-5 w-5" />
-              <span className="text-gray-600">Retour à l'accueil</span>
+              <span className="text-gray-600">Retour à l&apos;accueil</span>
             </Link>
           </div>
+        </div>
+        
+        {/* Logo Feel en haut à droite */}
+        <div className="absolute top-4 right-4">
+          <Image
+            src="/logos/Logo FEEL .png"
+            alt="Feel Logo"
+            width={120}
+            height={40}
+            className="h-8 w-auto"
+          />
         </div>
       </header>
 
@@ -103,7 +115,7 @@ export default function SignUpPage() {
                         loading={isLoading}
                         icon={Mail}
                       >
-                        S'inscrire avec Google
+                        S&apos;inscrire avec Google
                       </FeelButton>
 
                       <FeelButton
@@ -114,7 +126,7 @@ export default function SignUpPage() {
                         loading={isLoading}
                         icon={Mail}
                       >
-                        S'inscrire avec Apple
+                        S&apos;inscrire avec Apple
                       </FeelButton>
                     </div>
 
@@ -192,7 +204,7 @@ export default function SignUpPage() {
                   <p className="text-xs text-green-600 text-center leading-relaxed">
                     En vous inscrivant, vous acceptez nos{' '}
                     <Link href="/terms" className="text-green-700 hover:text-green-800 hover:underline font-medium">
-                      conditions d'utilisation
+                      conditions d&apos;utilisation
                     </Link>{' '}
                     et notre{' '}
                     <Link href="/privacy" className="text-green-700 hover:text-green-800 hover:underline font-medium">
