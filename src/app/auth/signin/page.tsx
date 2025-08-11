@@ -13,7 +13,7 @@ import { FeelButton } from '@/components/Button';
 import { ArrowLeft, ArrowRight, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { Profession } from '@/types/auth';
 
-export default function SignInPage() {
+export default function SignUpPage() {
   const router = useRouter();
   const [selectedProfession, setSelectedProfession] = useState<Profession | undefined>();
   const [showPassword, setShowPassword] = useState(false);
@@ -85,7 +85,7 @@ export default function SignInPage() {
       <header className="bg-[#F5F1E8] shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center space-x-3 hover:text-feel-primary-600 transition-colors">
+            <Link href="/" className="flex items-center space-x-3 hover:text-green-600 transition-colors">
               <ArrowLeft className="h-5 w-5" />
               <span className="text-gray-600">Retour à l'accueil</span>
             </Link>
@@ -108,14 +108,14 @@ export default function SignInPage() {
         <div className="w-full max-w-7xl mx-auto">
           <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
             <div className="grid lg:grid-cols-[2fr_1fr] min-h-[600px]">
-              {/* Colonne gauche - Sélection profil (70%) */}
+              {/* Colonne gauche - Sélection profil inscription (70%) */}
               <div className="p-8 lg:p-12 overflow-y-auto">
                 <div className="mb-8 text-center">
                   <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent mb-4">
-                    Connexion Feel
+                    Inscription Feel
                   </h1>
                   <p className="text-lg text-gray-600 leading-relaxed">
-                    Accédez à votre espace professionnel
+                    Créez votre espace professionnel Feel
                   </p>
                 </div>
 
@@ -132,7 +132,7 @@ export default function SignInPage() {
                   <div className="space-y-6">
                     <div className="text-center">
                       <h3 className="text-xl font-semibold text-gray-900 mb-6">
-                        Connectez-vous avec votre compte
+                        Créez votre compte avec
                       </h3>
                     </div>
 
@@ -145,7 +145,7 @@ export default function SignInPage() {
                         loading={isLoading}
                         icon={Mail}
                       >
-                        Continuer avec Google
+                        S'inscrire avec Google
                       </FeelButton>
 
                       <FeelButton
@@ -156,7 +156,7 @@ export default function SignInPage() {
                         loading={isLoading}
                         icon={Mail}
                       >
-                        Continuer avec Apple
+                        S'inscrire avec Apple
                       </FeelButton>
                     </div>
 
@@ -245,12 +245,12 @@ export default function SignInPage() {
             </div>
           </div>
 
-          {/* Lien vers l'inscription */}
+          {/* Lien vers la connexion */}
           <div className="text-center mt-8">
             <p className="text-gray-600 text-lg">
-              Pas encore de compte ?{' '}
-              <Link href="/auth/signup" className="text-green-600 hover:text-green-700 hover:underline font-medium">
-                Créer un compte
+              Déjà un compte ?{' '}
+              <Link href="/auth/signin" className="text-green-600 hover:text-green-700 hover:underline font-medium">
+                Se connecter
               </Link>
             </p>
           </div>
