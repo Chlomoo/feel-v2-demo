@@ -82,7 +82,7 @@ export default function SignInPage() {
   return (
     <div className="min-h-screen bg-[#F5F1E8] flex flex-col">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-[#F5F1E8] shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-3 hover:text-feel-primary-600 transition-colors">
@@ -110,7 +110,7 @@ export default function SignInPage() {
             <div className="grid lg:grid-cols-[2fr_1fr] min-h-[600px]">
               {/* Colonne gauche - Sélection profil (70%) */}
               <div className="p-8 lg:p-12 overflow-y-auto">
-                <div className="mb-8">
+                <div className="mb-8 text-center">
                   <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
                     Connexion Feel
                   </h1>
@@ -121,9 +121,6 @@ export default function SignInPage() {
 
                 {/* Sélection du profil */}
                 <div className="mb-8">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                    Votre profil professionnel
-                  </h2>
                   <ProfileSelector
                     onSelect={handleProfessionSelect}
                     selectedProfession={selectedProfession}
