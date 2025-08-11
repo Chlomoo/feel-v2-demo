@@ -269,9 +269,37 @@ export default function HomePage() {
                     )}
                   </ul>
                   <div className="mt-6">
-                    <Button variant="outline" size="sm" className="w-full">
-                      En savoir plus
-                    </Button>
+                    {persona.id === 'praticien' ? (
+                      <Link href="/chirurgien-dentiste">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full"
+                        >
+                          En savoir plus
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full"
+                        onClick={() => {
+                          const element = document.querySelector('.feel-pitch-container') as HTMLElement;
+                          if (element) {
+                            const offset = 80; // Espace pour header fixe
+                            const elementPosition = element.offsetTop - offset;
+                            
+                            window.scrollTo({
+                              top: elementPosition,
+                              behavior: 'smooth'
+                            });
+                          }
+                        }}
+                      >
+                        En savoir plus
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
@@ -279,6 +307,10 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+
+
+
 
       {/* Section 3: Value Proposition - Before/After */}
       <section className="py-20 bg-[#F5F1E8]">
