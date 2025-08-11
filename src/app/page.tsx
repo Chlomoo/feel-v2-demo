@@ -151,7 +151,13 @@ export default function HomePage() {
             {FEEL_CONFIG.PERSONAS.map((persona) => (
               <Card 
                 key={persona.id}
-                className={`cursor-pointer transition-all duration-300 hover:shadow-xl ${
+                className={`cursor-pointer transition-all duration-300 hover:shadow-xl border-2 ${
+                  persona.id === 'praticien' 
+                    ? 'border-green-400 bg-green-50 hover:bg-green-100' 
+                    : persona.id === 'directeur'
+                    ? 'border-blue-400 bg-blue-50 hover:bg-blue-100'
+                    : 'border-purple-400 bg-purple-50 hover:bg-purple-100'
+                } ${
                   activePersona === persona.id 
                     ? 'ring-2 ring-green-500 shadow-lg' 
                     : 'hover:shadow-lg'
@@ -159,10 +165,16 @@ export default function HomePage() {
                 onClick={() => setActivePersona(persona.id)}
               >
                 <CardHeader className="text-center">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    {persona.id === 'praticien' && <User className="h-8 w-8 text-green-600" />}
-                    {persona.id === 'assistante' && <Users className="h-8 w-8 text-green-600" />}
-                    {persona.id === 'directeur' && <Shield className="h-8 w-8 text-green-600" />}
+                  <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 ${
+                    persona.id === 'praticien' 
+                      ? 'bg-green-100' 
+                      : persona.id === 'directeur'
+                      ? 'bg-blue-100'
+                      : 'bg-purple-100'
+                  }`}>
+                    {persona.id === 'praticien' && <User className="h-8 w-8 text-green-500" />}
+                    {persona.id === 'assistante' && <Users className="h-8 w-8 text-purple-500" />}
+                    {persona.id === 'directeur' && <Shield className="h-8 w-8 text-blue-500" />}
                   </div>
                   <CardTitle className="text-xl">{persona.titre}</CardTitle>
                   <CardDescription className="text-gray-600">
@@ -174,19 +186,19 @@ export default function HomePage() {
                     {persona.id === 'praticien' && (
                       <>
                         <li className="flex items-start space-x-3">
-                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
                           <span className="text-gray-700">Profil praticien et Contrats numériques</span>
                         </li>
                         <li className="flex items-start space-x-3">
-                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
                           <span className="text-gray-700">Smart Comptabilité</span>
                         </li>
                         <li className="flex items-start space-x-3">
-                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
                           <span className="text-gray-700">Gestion de Stock digital</span>
                         </li>
                         <li className="flex items-start space-x-3">
-                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
                           <span className="text-gray-700">SOS Assistante</span>
                         </li>
                       </>
@@ -194,19 +206,19 @@ export default function HomePage() {
                     {persona.id === 'assistante' && (
                       <>
                         <li className="flex items-start space-x-3">
-                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-5 w-5 text-purple-500 mt-0.5 flex-shrink-0" />
                           <span className="text-gray-700">Espace perso et Contrats digitalisés</span>
                         </li>
                         <li className="flex items-start space-x-3">
-                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-5 w-5 text-purple-500 mt-0.5 flex-shrink-0" />
                           <span className="text-gray-700">SOS Assistante (Intérim digital)</span>
                         </li>
                         <li className="flex items-start space-x-3">
-                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-5 w-5 text-purple-500 mt-0.5 flex-shrink-0" />
                           <span className="text-gray-700">Gestion de Stock digital</span>
                         </li>
                         <li className="flex items-start space-x-3">
-                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-5 w-5 text-purple-500 mt-0.5 flex-shrink-0" />
                           <span className="text-gray-700">News dentaires</span>
                         </li>
                       </>
@@ -214,19 +226,19 @@ export default function HomePage() {
                     {persona.id === 'directeur' && (
                       <>
                         <li className="flex items-start space-x-3">
-                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
                           <span className="text-gray-700">Cockpit de supervision globale</span>
                         </li>
                         <li className="flex items-start space-x-3">
-                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
                           <span className="text-gray-700">RH et contrats digitalisés</span>
                         </li>
                         <li className="flex items-start space-x-3">
-                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
                           <span className="text-gray-700">Smart Comptabilité (multi-structure)</span>
                         </li>
                         <li className="flex items-start space-x-3">
-                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
+                          <CheckCircle className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
                           <span className="text-gray-700">Gestion de stock centralisée</span>
                         </li>
                       </>
