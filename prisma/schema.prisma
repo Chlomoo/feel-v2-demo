@@ -1,0 +1,383 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Modèle utilisateur principal
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  image         String?
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  accounts      Account[]
+  sessions      Session[]
+  profile       Profile?
+  verification  Verification?
+  documents     Document[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+// Comptes OAuth (Google, Apple)
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+// Sessions utilisateur
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+// Profils professionnels Feel
+model Profile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Informations de base
+  firstName   String
+  lastName    String
+  phone       String?
+  address     String?
+  city        String?
+  postalCode  String?
+  country     String   @default("France")
+  
+  // Profil professionnel
+  profession  Profession
+  status      ProfileStatus @default(PENDING)
+  
+  // Données spécifiques par profil
+  praticien   PraticienProfile?
+  directeur   DirecteurProfile?
+  assistante  AssistanteProfile?
+  
+  // Sécurité
+  twoFactorEnabled Boolean @default(false)
+  twoFactorSecret  String?
+  lastLoginAt      DateTime?
+  
+  // Métadonnées
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("profiles")
+}
+
+// Profil Chirurgien-Dentiste
+model PraticienProfile {
+  id                String   @id @default(cuid())
+  profileId         String   @unique
+  profile           Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  // Données professionnelles
+  rppsNumber        String?  @unique // Numéro RPPS
+  rppsVerified      Boolean  @default(false)
+  orderNumber       String?  // Numéro d'inscription à l'Ordre
+  orderVerified     Boolean  @default(false)
+  diploma           String?  // Diplôme d'État
+  diplomaVerified   Boolean  @default(false)
+  
+  // Spécialités
+  specialties       String[] // Array des spécialités
+  
+  // Cabinet
+  cabinetName       String?
+  cabinetAddress    String?
+  cabinetPhone      String?
+  
+  // Validation
+  verifiedAt        DateTime?
+  verifiedBy        String?  // Admin qui a validé
+
+  @@map("praticien_profiles")
+}
+
+// Profil Directeur Structure
+model DirecteurProfile {
+  id                String   @id @default(cuid())
+  profileId         String   @unique
+  profile           Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  // Données entreprise
+  companyName       String?
+  siretNumber       String?  @unique
+  siretVerified     Boolean  @default(false)
+  sirenNumber       String?
+  kbisDocument      String?  // URL du document Kbis
+  kbisVerified      Boolean  @default(false)
+  
+  // Responsabilité
+  isResponsible     Boolean  @default(false)
+  responsibleDocument String? // Attestation de responsabilité
+  
+  // Multi-sites
+  sites             Site[]
+  
+  // Validation
+  verifiedAt        DateTime?
+  verifiedBy        String?
+
+  @@map("directeur_profiles")
+}
+
+// Sites gérés par un directeur
+model Site {
+  id                String   @id @default(cuid())
+  directeurId       String
+  directeur         DirecteurProfile @relation(fields: [directeurId], references: [id], onDelete: Cascade)
+  
+  name              String
+  address           String
+  phone             String?
+  email             String?
+  siretNumber       String?
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("sites")
+}
+
+// Profil Assistante Dentaire
+model AssistanteProfile {
+  id                String   @id @default(cuid())
+  profileId         String   @unique
+  profile           Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  
+  // Certification
+  certification     String?  // Certificat de formation
+  certificationVerified Boolean @default(false)
+  
+  // ARS
+  arsRegion         String?
+  arsVerified       Boolean  @default(false)
+  
+  // Références (2 praticiens minimum)
+  references        Reference[]
+  
+  // Formation
+  trainingCenter    String?
+  trainingDate      DateTime?
+  
+  // Validation
+  verifiedAt        DateTime?
+  verifiedBy        String?
+
+  @@map("assistante_profiles")
+}
+
+// Références pour assistantes
+model Reference {
+  id                String   @id @default(cuid())
+  assistanteId      String
+  assistante        AssistanteProfile @relation(fields: [assistanteId], references: [id], onDelete: Cascade)
+  
+  praticienName     String
+  praticienPhone    String?
+  praticienEmail    String?
+  praticienAddress  String?
+  rppsNumber        String?
+  
+  // Validation référence
+  verified          Boolean  @default(false)
+  verifiedAt        DateTime?
+  
+  createdAt         DateTime @default(now())
+
+  @@map("references")
+}
+
+// Vérification professionnelle
+model Verification {
+  id                String   @id @default(cuid())
+  userId            String   @unique
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Statut global
+  status            VerificationStatus @default(PENDING)
+  step              VerificationStep @default(PROFILE_SELECTION)
+  
+  // Vérification biométrique
+  idDocument        String?  // URL document d'identité
+  selfie            String?  // URL selfie
+  biometricVerified Boolean  @default(false)
+  
+  // APIs officielles
+  rppsChecked       Boolean  @default(false)
+  rppsResult        Json?    // Résultat API RPPS
+  inseeChecked      Boolean  @default(false)
+  inseeResult       Json?    // Résultat API INSEE
+  arsChecked        Boolean  @default(false)
+  arsResult         Json?    // Résultat API ARS
+  
+  // Validation manuelle
+  manualVerified    Boolean  @default(false)
+  verifiedBy        String?  // Admin qui a validé
+  verifiedAt        DateTime?
+  rejectionReason   String?  // Raison du rejet
+  
+  // Métadonnées
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("verifications")
+}
+
+// Documents uploadés
+model Document {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type              DocumentType
+  filename          String
+  originalName      String
+  mimeType          String
+  size              Int
+  url               String
+  
+  // OCR et extraction
+  ocrProcessed      Boolean  @default(false)
+  ocrData           Json?    // Données extraites par OCR
+  
+  // Validation
+  verified          Boolean  @default(false)
+  verifiedBy        String?
+  verifiedAt        DateTime?
+  rejectionReason   String?
+  
+  createdAt         DateTime @default(now())
+
+  @@map("documents")
+}
+
+// Notifications
+model Notification {
+  id                String   @id @default(cuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type              NotificationType
+  title             String
+  message           String
+  read              Boolean  @default(false)
+  
+  // Métadonnées
+  createdAt         DateTime @default(now())
+
+  @@map("notifications")
+}
+
+// Admins pour validation manuelle
+model Admin {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  name              String
+  role              AdminRole @default(VALIDATOR)
+  
+  // Permissions
+  canVerifyPraticiens    Boolean @default(true)
+  canVerifyDirecteurs    Boolean @default(true)
+  canVerifyAssistantes   Boolean @default(true)
+  canManageUsers         Boolean @default(false)
+  canManageAdmins        Boolean @default(false)
+  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("admins")
+}
+
+// Enums
+enum Profession {
+  PRATICIEN
+  DIRECTEUR
+  ASSISTANTE
+}
+
+enum ProfileStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  SUSPENDED
+}
+
+enum VerificationStatus {
+  PENDING
+  IN_PROGRESS
+  VERIFIED
+  REJECTED
+  NEEDS_MANUAL_REVIEW
+}
+
+enum VerificationStep {
+  PROFILE_SELECTION
+  PERSONAL_INFO
+  PROFESSIONAL_INFO
+  DOCUMENT_UPLOAD
+  BIOMETRIC_VERIFICATION
+  MANUAL_REVIEW
+  COMPLETED
+}
+
+enum DocumentType {
+  IDENTITY_CARD
+  PASSPORT
+  DRIVERS_LICENSE
+  DIPLOMA
+  KBIS
+  CERTIFICATION
+  REFERENCE_LETTER
+  OTHER
+}
+
+enum NotificationType {
+  VERIFICATION_STATUS
+  DOCUMENT_APPROVED
+  DOCUMENT_REJECTED
+  PROFILE_VERIFIED
+  PROFILE_REJECTED
+  SYSTEM_ALERT
+}
+
+enum AdminRole {
+  VALIDATOR
+  MANAGER
+  SUPER_ADMIN
+}

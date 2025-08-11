@@ -55,12 +55,16 @@ export default function HomePage() {
             </div>
           </div>
           <div className="flex space-x-4">
-            <Button variant="outline" size="sm">
-              Se connecter
-            </Button>
-            <Button variant="outline" size="sm">
-              S&apos;inscrire
-            </Button>
+            <Link href="/auth/signin">
+              <Button variant="outline" size="sm">
+                Se connecter
+              </Button>
+            </Link>
+            <Link href="/auth/signup">
+              <Button variant="outline" size="sm">
+                S&apos;inscrire
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
