@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import { FeelButton } from '@/components/Button';
+
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
@@ -58,13 +58,23 @@ export default function SignInPage() {
   return (
     <div className="min-h-screen bg-[#F5F1E8] flex flex-col">
       {/* Header */}
-      <header className="bg-[#F5F1E8] shadow-sm border-b border-gray-200">
+      <header className="bg-[#F5F1E8] shadow-sm border-b border-gray-200 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center space-x-3 hover:text-green-600 transition-colors">
               <ArrowLeft className="h-5 w-5" />
               <span className="text-gray-600">Retour à l'accueil</span>
             </Link>
+          </div>
+        </div>
+        
+        {/* Logo Feel en haut à droite */}
+        <div className="absolute top-4 right-4">
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+              <span className="text-white text-sm">💚</span>
+            </div>
+            <span className="text-gray-900 font-semibold text-lg">feel</span>
           </div>
         </div>
       </header>
@@ -150,15 +160,13 @@ export default function SignInPage() {
                 </div>
               )}
 
-              <FeelButton
+              <button
                 type="submit"
-                variant="primary"
-                size="lg"
-                className="w-full"
-                loading={isLoading}
+                disabled={isLoading}
+                className="w-full bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-lg font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
               >
-                Se connecter
-              </FeelButton>
+                {isLoading ? 'Connexion...' : 'Se connecter'}
+              </button>
             </form>
 
             {/* Séparateur */}
@@ -175,27 +183,25 @@ export default function SignInPage() {
 
             {/* Boutons OAuth */}
             <div className="space-y-4">
-              <FeelButton
-                variant="secondary"
-                size="lg"
-                className="w-full"
+              <button
+                type="button"
                 onClick={handleGoogleSignIn}
-                loading={isLoading}
-                icon={Mail}
+                disabled={isLoading}
+                className="w-full border border-gray-300 bg-white text-gray-900 py-3 px-4 rounded-lg font-medium transition-colors hover:bg-gray-50 hover:border-gray-400 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 flex items-center justify-center space-x-2"
               >
-                Continuer avec Google
-              </FeelButton>
+                <Mail className="h-5 w-5" />
+                <span>{isLoading ? 'Connexion...' : 'Continuer avec Google'}</span>
+              </button>
 
-              <FeelButton
-                variant="secondary"
-                size="lg"
-                className="w-full"
+              <button
+                type="button"
                 onClick={handleAppleSignIn}
-                loading={isLoading}
-                icon={Mail}
+                disabled={isLoading}
+                className="w-full border border-gray-300 bg-white text-gray-900 py-3 px-4 rounded-lg font-medium transition-colors hover:bg-gray-50 hover:border-gray-400 disabled:opacity-60 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 flex items-center justify-center space-x-2"
               >
-                Continuer avec Apple
-              </FeelButton>
+                <Mail className="h-5 w-5" />
+                <span>{isLoading ? 'Connexion...' : 'Continuer avec Apple'}</span>
+              </button>
             </div>
 
             {/* Lien vers l'inscription */}

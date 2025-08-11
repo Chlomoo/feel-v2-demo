@@ -94,10 +94,12 @@ export default function HomePage() {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 pt-6">
-                <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg">
-                  Essai gratuit
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
+                <Link href="/auth/signup">
+                  <Button size="lg" className="bg-green-600 hover:bg-green-700 text-white px-8 py-4 text-lg">
+                    Essai gratuit
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
                 <Button variant="outline" size="lg" className="px-8 py-4 text-lg">
                   Voir la démo
                 </Button>
