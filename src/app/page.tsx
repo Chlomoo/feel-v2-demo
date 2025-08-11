@@ -128,6 +128,28 @@ export default function HomePage() {
                       </div>
                       <h3 className="text-xl font-semibold text-gray-800">Plateforme Feel</h3>
                       <p className="text-gray-600">Expérience digitale de gestion Simplifiée</p>
+                      
+                      {/* Bouton "En savoir plus" */}
+                      <button 
+                        onClick={() => {
+                          const element = document.getElementById('profils');
+                          if (element) {
+                            const offset = 80; // Espace pour header fixe
+                            const elementPosition = element.offsetTop - offset;
+                            
+                            window.scrollTo({
+                              top: elementPosition,
+                              behavior: 'smooth'
+                            });
+                          }
+                        }}
+                        className="mt-4 border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 hover:transform hover:-translate-y-0.5 hover:shadow-md"
+                      >
+                        En savoir plus
+                        <svg className="w-4 h-4 ml-2 inline" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -138,7 +160,7 @@ export default function HomePage() {
       </section>
 
       {/* Section 2: Multi-Persona Targeting */}
-      <section className="py-20 bg-[#F5F1E8]">
+      <section id="profils" className="py-20 bg-[#F5F1E8]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
