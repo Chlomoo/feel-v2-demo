@@ -39,8 +39,8 @@ const PROFILES = [
   },
   {
     id: 'DIRECTEUR' as Profession,
-    title: 'Directeur Structure',
-    description: 'Pilotez votre structure dentaire',
+    title: 'Structure Dentaire',
+    description: 'Gérez plusieurs sites et équipes',
     icon: Shield,
     color: 'bg-blue-50 border-blue-200',
     iconColor: 'text-blue-600',
@@ -164,18 +164,9 @@ export const ProfileSelector: React.FC<ProfileSelectorProps> = ({
                     ))}
                   </div>
                   
-                  <div className="mb-4">
-                    <span className={`
-                      inline-block px-3 py-1 rounded-full text-xs font-semibold
-                      ${profile.verification.difficulty === 'Facile' ? 'bg-green-100 text-green-700 border border-green-200' :
-                        profile.verification.difficulty === 'Moyen' ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' :
-                        'bg-red-100 text-red-700 border border-red-200'}
-                    `}>
-                      {profile.verification.difficulty}
-                    </span>
-                  </div>
+                  {/* Badge de difficulté supprimé */}
                 </div>
-
+                
                 {/* Bouton de sélection */}
                 <div className="mt-auto">
                   <FeelButton

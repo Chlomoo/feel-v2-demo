@@ -32,6 +32,17 @@ export const FEEL_CONFIG = {
       ]
     },
     {
+      id: 'directeur',
+      titre: 'Structure Dentaire', 
+      description: 'Pilotez votre structure dentaire',
+      benefits: [
+        'Cockpit multi-sites consolidé',
+        'Analytics avancées',
+        'Gestion équipes centralisée',
+        'Optimisation ressources'
+      ]
+    },
+    {
       id: 'assistante', 
       titre: 'Assistante Dentaire',
       description: 'Optimisez votre quotidien professionnel',
@@ -40,17 +51,6 @@ export const FEEL_CONFIG = {
         'Interface mobile optimisée',
         'Paiements automatiques sécurisés',
         'Portfolio professionnel'
-      ]
-    },
-    {
-      id: 'directeur',
-      titre: 'Directeur Structure', 
-      description: 'Pilotez votre structure dentaire',
-      benefits: [
-        'Cockpit multi-sites consolidé',
-        'Analytics avancées',
-        'Gestion équipes centralisée',
-        'Optimisation ressources'
       ]
     }
   ]

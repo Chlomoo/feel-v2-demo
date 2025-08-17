@@ -157,13 +157,13 @@ export default function ChirurgienDentistePage() {
       title: 'Gain de Temps Significatif',
       description: 'Automatisation tâches répétitives',
       icon: <Clock className="w-6 h-6" />,
-      value: '3h/semaine'
+      value: 'Concentrez-vous sur l\'essentiel'
     },
     {
       title: 'Recherche Assistante Simplifiée',
       description: 'Matching intelligent',
       icon: <Users className="w-6 h-6" />,
-      value: '2h max'
+      value: 'Réseau d\'assistantes'
     },
     {
       title: 'Vision Unifiée Activité',
@@ -222,7 +222,7 @@ export default function ChirurgienDentistePage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header avec navigation retour */}
-      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+      <header className="bg-[#F5F1E8] shadow-sm border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">

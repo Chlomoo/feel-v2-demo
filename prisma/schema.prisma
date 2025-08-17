@@ -128,7 +128,7 @@ model PraticienProfile {
   @@map("praticien_profiles")
 }
 
-// Profil Directeur Structure
+// Profil Structure Dentaire
 model DirecteurProfile {
   id                String   @id @default(cuid())
   profileId         String   @unique

@@ -490,9 +490,11 @@ export default function HomePage() {
             <Button size="lg" variant="secondary" className="px-8 py-4 text-lg">
               Essai gratuit 14 jours
             </Button>
-            <Button size="lg" variant="outline" className="px-8 py-4 text-lg border-white text-white hover:bg-white hover:text-green-700 bg-white bg-opacity-10">
-              Contacter l&apos;équipe
-            </Button>
+            <Link href="/contact">
+              <Button size="lg" variant="outline" className="px-8 py-4 text-lg border-white text-white hover:bg-white hover:text-green-700 bg-white bg-opacity-10">
+                Contacter l&apos;équipe
+              </Button>
+            </Link>
           </div>
           
           <div className="flex items-center justify-center space-x-8 text-green-100">
