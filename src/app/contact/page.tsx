@@ -39,9 +39,9 @@ export default function ContactPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center space-x-4">
-              <Link href="/chirurgien-dentiste" className="flex items-center space-x-2 text-green-600 hover:text-green-700 transition-colors">
+              <Link href="/" className="flex items-center space-x-2 text-green-600 hover:text-green-700 transition-colors">
                 <ArrowLeft className="w-5 h-5" />
-                <span className="font-medium">Retour à la page dentiste</span>
+                <span className="font-medium">Retour à la page d'accueil</span>
               </Link>
             </div>
             <div className="flex items-center space-x-3">

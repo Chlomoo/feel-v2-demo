@@ -279,6 +279,26 @@ export default function HomePage() {
                           En savoir plus
                         </Button>
                       </Link>
+                    ) : persona.id === 'assistante' ? (
+                      <Link href="/assistante-dentaire">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full"
+                        >
+                          En savoir plus
+                        </Button>
+                      </Link>
+                    ) : persona.id === 'directeur' ? (
+                      <Link href="/structure-dentaire">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full"
+                        >
+                          En savoir plus
+                        </Button>
+                      </Link>
                     ) : (
                       <Button 
                         variant="outline" 
