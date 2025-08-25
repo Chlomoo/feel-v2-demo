@@ -1,0 +1,17 @@
+{
+  "/_not-found/page": "/_not-found",
+  "/favicon.ico/route": "/favicon.ico",
+  "/auth/login/page": "/auth/login",
+  "/auth/signin/page": "/auth/signin",
+  "/auth/register/page": "/auth/register",
+  "/auth/signup/page": "/auth/signup",
+  "/dashboard/assistante/page": "/dashboard/assistante",
+  "/dashboard/directeur/page": "/dashboard/directeur",
+  "/dashboard/praticien/page": "/dashboard/praticien",
+  "/landing/page": "/landing",
+  "/page": "/",
+  "/assistante-dentaire/page": "/assistante-dentaire",
+  "/contact/page": "/contact",
+  "/chirurgien-dentiste/page": "/chirurgien-dentiste",
+  "/structure-dentaire/page": "/structure-dentaire"
+}

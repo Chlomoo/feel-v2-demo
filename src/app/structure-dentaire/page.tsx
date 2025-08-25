@@ -233,7 +233,7 @@ export default function StructureDentairePage() {
             <div className="flex items-center space-x-4">
               <Link href="/" className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors">
                 <ArrowLeft className="w-5 h-5" />
-                <span className="font-medium">Retour à l'accueil</span>
+                <span className="font-medium">Retour à l&apos;accueil</span>
               </Link>
             </div>
             <div className="flex items-center space-x-3">
