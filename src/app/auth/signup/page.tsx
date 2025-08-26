@@ -190,10 +190,10 @@ export default function SignUpPage() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-green-800 mb-2 text-base">
-                        Conformité HDS
+                        Conformité RGPD
                       </h3>
                       <p className="text-sm text-green-700 leading-relaxed">
-                        Hébergement certifié pour les données de santé
+                        Données patients et professionnelles sécurisées selon les standards européens
                       </p>
                     </div>
                   </div>
