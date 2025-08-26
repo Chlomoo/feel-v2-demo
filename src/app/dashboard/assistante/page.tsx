@@ -18,6 +18,8 @@ import {
   Filter
 } from "lucide-react";
 import Link from "next/link";
+import DashboardHeader from "@/components/ui/DashboardHeader";
+import DashboardBreadcrumb from "@/components/ui/DashboardBreadcrumb";
 
 interface Module {
   id: string;
@@ -141,32 +143,23 @@ export default function AssistanteDashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Mobile-First */}
-      <header className="bg-white shadow-sm border-b sticky top-0 z-10">
-        <div className="px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mr-3">
-                <User className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-lg font-semibold text-gray-900">Marie Lefebvre</h1>
-                <p className="text-sm text-gray-500">Assistante Dentaire</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-3">
-              <button className="p-2 text-gray-400 hover:text-gray-600 relative">
-                <Bell className="h-5 w-5" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
-              </button>
-              <Link href="/auth/login" className="text-sm text-gray-600 hover:text-gray-800">
-                Déconnexion
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <DashboardHeader
+        userName="Marie Lefebvre"
+        userRole="Assistante Dentaire"
+        logoSize="sm"
+        showNotifications={true}
+        notificationCount={6}
+      />
 
       <main className="px-4 py-6 space-y-6">
+        {/* Breadcrumb */}
+        <DashboardBreadcrumb
+          items={[
+            { label: "Dashboard", href: "/dashboard/assistante" },
+            { label: "Vue d'ensemble" }
+          ]}
+        />
+
         {/* Statistiques personnelles */}
         <div className="grid grid-cols-2 gap-4">
           {stats.map((stat, index) => (

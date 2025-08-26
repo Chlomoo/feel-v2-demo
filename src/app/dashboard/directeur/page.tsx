@@ -21,6 +21,8 @@ import {
   Activity
 } from "lucide-react";
 import Link from "next/link";
+import DashboardHeader from "@/components/ui/DashboardHeader";
+import DashboardBreadcrumb from "@/components/ui/DashboardBreadcrumb";
 
 interface Module {
   id: string;
@@ -239,32 +241,24 @@ export default function DirecteurDashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-full flex items-center justify-center mr-3">
-                <Building2 className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900">Sophie Chen</h1>
-                <p className="text-sm text-gray-500">Directrice de Structure • 5 sites • 30 professionnels</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <button className="p-2 text-gray-400 hover:text-gray-600 relative">
-                <Bell className="h-5 w-5" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
-              </button>
-              <Link href="/auth/login" className="text-sm text-gray-600 hover:text-gray-800">
-                Déconnexion
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <DashboardHeader
+        userName="Sophie Chen"
+        userRole="Directrice de Structure"
+        userInfo="5 sites • 30 professionnels"
+        logoSize="md"
+        showNotifications={true}
+        notificationCount={17}
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Breadcrumb */}
+        <DashboardBreadcrumb
+          items={[
+            { label: "Dashboard", href: "/dashboard/directeur" },
+            { label: "Vue d'ensemble" }
+          ]}
+        />
+
         {/* KPIs Principaux */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {kpis.map((kpi, index) => (
