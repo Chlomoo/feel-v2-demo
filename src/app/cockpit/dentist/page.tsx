@@ -11,11 +11,151 @@ import {
   Heart, Bell, TrendingUp, Calendar, Clock, Star,
   ArrowRight, Plus, Settings, Search, Filter, LogOut,
   MapPin, Phone, Mail, Award, Shield, CheckCircle,
-  AlertTriangle, ExternalLink, Download, Upload
+  AlertTriangle, ExternalLink, Download, Upload, Edit3,
+  X, Save, Camera, Trash2, ChevronDown, Loader2
 } from 'lucide-react';
 
 export default function DentistCockpit() {
   const [activeTab, setActiveTab] = useState('overview');
+  
+  // États pour l'édition du profil
+  const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+  const [showPhotoModal, setShowPhotoModal] = useState(false);
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
+  
+  // États pour les informations du praticien
+  const [practitionerInfo, setPractitionerInfo] = useState({
+    rpps: '10003123456',
+    adeli: '750012345',
+    siret: '12345678901234',
+    address: '15 rue République, 75011 Paris',
+    phone: '01 23 45 67 89',
+    email: 'martin.dubois@feel-demo.fr'
+  });
+  
+  // États pour les spécialités
+  const [specialties, setSpecialties] = useState(['Implantologie', 'Chirurgie Orale', 'Parodontologie']);
+  const [showSpecialtySelector, setShowSpecialtySelector] = useState(false);
+  
+  // États pour les modals des organismes
+  const [showOrganismeModal, setShowOrganismeModal] = useState(false);
+  const [selectedOrganisme, setSelectedOrganisme] = useState<any>(null);
+  
+  // Liste des spécialités disponibles
+  const availableSpecialties = [
+    'Chirurgie orale', 'Implantologie', 'Parodontologie', 'Orthodontie', 
+    'Endodontie', 'Prothèses dentaires', 'Dentisterie esthétique', 
+    'Pédodontie', 'Gérondontologie', 'Pathologie et médecine bucco-dentaire',
+    'Radiologie dentaire', 'Anesthésiologie dentaire'
+  ];
+
+  // URLs des organismes officiels
+  const organismeUrls = {
+    oncd: 'https://www.ordre-chirurgiens-dentistes.fr',
+    urssaf: 'https://www.urssaf.fr/portail/home/espaces-dedies/independants.html',
+    carcdsf: 'https://www.carcdsf.fr',
+    dgfip: 'https://www.impots.gouv.fr/portail/professionnel',
+    amelie: 'https://www.amelie.fr/professionnel-sante'
+  };
+
+  // Fonctions utilitaires
+  const validateRPPS = (rpps: string) => /^\d{11}$/.test(rpps);
+  const validateAdeli = (adeli: string) => /^\d{9}$/.test(adeli);
+  const validateSIRET = (siret: string) => /^\d{14}$/.test(siret);
+  const validatePhone = (phone: string) => /^(?:(?:\+|00)33|0)\s*[1-9](?:[\s.-]*\d{2}){4}$/.test(phone);
+  const validateEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      // Validation du fichier
+      if (file.size > 2 * 1024 * 1024) {
+        alert('Le fichier doit faire moins de 2MB');
+        return;
+      }
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        alert('Format accepté : JPG, PNG, WebP');
+        return;
+      }
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setProfilePhoto(e.target?.result as string);
+        setShowSuccess(true);
+        setTimeout(() => setShowSuccess(false), 3000);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleFieldEdit = (field: string, value: string) => {
+    setPractitionerInfo(prev => ({ ...prev, [field]: value }));
+    setEditingField(null);
+    setIsSaving(true);
+    setTimeout(() => {
+      setIsSaving(false);
+      setShowSuccess(true);
+      setTimeout(() => setShowSuccess(false), 3000);
+    }, 1000);
+  };
+
+  const handleSpecialtyAdd = (specialty: string) => {
+    if (!specialties.includes(specialty) && specialties.length < 5) {
+      setSpecialties(prev => [...prev, specialty]);
+      setShowSpecialtySelector(false);
+    }
+  };
+
+  const handleSpecialtyRemove = (specialty: string) => {
+    setSpecialties(prev => prev.filter(s => s !== specialty));
+  };
+
+  // Fonctions de gestion des organismes
+  const handleOrganismeClick = (connection: any) => {
+    // Normaliser le nom en supprimant les accents et espaces
+    const organismeKey = connection.name
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Supprimer les accents
+      .replace(/\s+/g, ''); // Supprimer les espaces
+    
+    if (connection.status === 'connected') {
+      // Redirection directe vers le site officiel
+      const url = organismeUrls[organismeKey as keyof typeof organismeUrls];
+      if (url) {
+        window.open(url, '_blank');
+      }
+    } else {
+      // Ouvrir modal pour les organismes en attente ou en erreur
+      setSelectedOrganisme(connection);
+      setShowOrganismeModal(true);
+    }
+  };
+
+  const handleReconnect = (organisme: any) => {
+    // Simulation de reconnexion
+    console.log(`Reconnexion à ${organisme.name}...`);
+    setShowOrganismeModal(false);
+    setShowSuccess(true);
+    setTimeout(() => setShowSuccess(false), 3000);
+  };
+
+  const handleAccessWebsite = (organisme: any) => {
+    // Normaliser le nom en supprimant les accents et espaces
+    const organismeKey = organisme.name
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Supprimer les accents
+      .replace(/\s+/g, ''); // Supprimer les espaces
+    
+    const url = organismeUrls[organismeKey as keyof typeof organismeUrls];
+    if (url) {
+      window.open(url, '_blank');
+    }
+    setShowOrganismeModal(false);
+  };
 
   const kpis = [
     { title: 'CA mensuel Feel', value: '€28,500', change: '+12%', icon: TrendingUp, color: 'text-green-600' },
@@ -153,8 +293,24 @@ export default function DentistCockpit() {
               </Link>
               <div className="h-8 w-px bg-gray-300" />
               <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                  <User className="h-6 w-6 text-green-600" />
+                <div 
+                  className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center cursor-pointer hover:bg-green-200 transition-colors relative group"
+                  onClick={() => setShowPhotoModal(true)}
+                >
+                  {profilePhoto ? (
+                    <Image
+                      src={profilePhoto}
+                      alt="Photo de profil"
+                      width={48}
+                      height={48}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                  ) : (
+                    <User className="h-6 w-6 text-green-600" />
+                  )}
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-full transition-all duration-200 flex items-center justify-center">
+                    <Camera className="h-4 w-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                  </div>
                 </div>
                 <div>
                   <h1 className="text-2xl font-bold text-gray-900">Dr. Martin Dubois</h1>
@@ -215,8 +371,24 @@ export default function DentistCockpit() {
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                      <User className="h-5 w-5 text-green-600" />
+                    <div 
+                      className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center cursor-pointer hover:bg-green-200 transition-colors relative group"
+                      onClick={() => setShowPhotoModal(true)}
+                    >
+                      {profilePhoto ? (
+                        <Image
+                          src={profilePhoto}
+                          alt="Photo de profil"
+                          width={40}
+                          height={40}
+                          className="w-10 h-10 rounded-lg object-cover"
+                        />
+                      ) : (
+                        <User className="h-5 w-5 text-green-600" />
+                      )}
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-lg transition-all duration-200 flex items-center justify-center">
+                        <Camera className="h-3 w-3 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
                     </div>
                     <div>
                       <CardTitle className="text-xl">Profil Praticien</CardTitle>
@@ -230,11 +402,27 @@ export default function DentistCockpit() {
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Carte d'Identité Professionnelle */}
-                <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-6 border border-green-200">
+                <div className="bg-gradient-to-br from-green-50 to-blue-50 rounded-xl p-6 border border-green-200 group">
                   <div className="flex items-start space-x-6">
                     {/* Photo Professionnelle */}
-                    <div className="w-24 h-24 bg-white rounded-full border-4 border-green-200 flex items-center justify-center shadow-lg">
-                      <User className="h-12 w-12 text-green-600" />
+                    <div 
+                      className="w-24 h-24 bg-white rounded-full border-4 border-green-200 flex items-center justify-center shadow-lg cursor-pointer hover:border-green-300 transition-colors relative group"
+                      onClick={() => setShowPhotoModal(true)}
+                    >
+                      {profilePhoto ? (
+                        <Image
+                          src={profilePhoto}
+                          alt="Photo de profil"
+                          width={96}
+                          height={96}
+                          className="w-24 h-24 rounded-full object-cover"
+                        />
+                      ) : (
+                        <User className="h-12 w-12 text-green-600" />
+                      )}
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-full transition-all duration-200 flex items-center justify-center">
+                        <Camera className="h-6 w-6 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
                     </div>
                     
                     {/* Informations Officielles */}
@@ -250,46 +438,357 @@ export default function DentistCockpit() {
                           <div className="flex items-center space-x-2">
                             <Award className="h-4 w-4 text-green-600" />
                             <span className="text-sm font-medium text-gray-700">RPPS:</span>
-                            <span className="text-sm font-mono text-gray-900">10003123456</span>
+                            {editingField === 'rpps' ? (
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="text"
+                                  value={practitionerInfo.rpps}
+                                  onChange={(e) => setPractitionerInfo(prev => ({ ...prev, rpps: e.target.value }))}
+                                  className="text-sm font-mono text-gray-900 border border-gray-300 rounded px-2 py-1 w-32"
+                                  maxLength={11}
+                                />
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    if (validateRPPS(practitionerInfo.rpps)) {
+                                      handleFieldEdit('rpps', practitionerInfo.rpps);
+                                    } else {
+                                      alert('RPPS doit contenir exactement 11 chiffres');
+                                    }
+                                  }}
+                                  className="h-6 px-2"
+                                >
+                                  <Save className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setEditingField(null);
+                                    setPractitionerInfo(prev => ({ ...prev, rpps: '10003123456' }));
+                                  }}
+                                  className="h-6 px-2"
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center space-x-2">
+                                <span className="text-sm font-mono text-gray-900">{practitionerInfo.rpps}</span>
+                                <button
+                                  onClick={() => setEditingField('rpps')}
+                                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                  <Edit3 className="h-3 w-3 text-gray-400 hover:text-green-600" />
+                                </button>
+                              </div>
+                            )}
                           </div>
                           <div className="flex items-center space-x-2">
                             <Shield className="h-4 w-4 text-green-600" />
                             <span className="text-sm font-medium text-gray-700">Adeli:</span>
-                            <span className="text-sm font-mono text-gray-900">750012345</span>
+                            {editingField === 'adeli' ? (
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="text"
+                                  value={practitionerInfo.adeli}
+                                  onChange={(e) => setPractitionerInfo(prev => ({ ...prev, adeli: e.target.value }))}
+                                  className="text-sm font-mono text-gray-900 border border-gray-300 rounded px-2 py-1 w-28"
+                                  maxLength={9}
+                                />
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    if (validateAdeli(practitionerInfo.adeli)) {
+                                      handleFieldEdit('adeli', practitionerInfo.adeli);
+                                    } else {
+                                      alert('Adeli doit contenir exactement 9 chiffres');
+                                    }
+                                  }}
+                                  className="h-6 px-2"
+                                >
+                                  <Save className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setEditingField(null);
+                                    setPractitionerInfo(prev => ({ ...prev, adeli: '750012345' }));
+                                  }}
+                                  className="h-6 px-2"
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center space-x-2">
+                                <span className="text-sm font-mono text-gray-900">{practitionerInfo.adeli}</span>
+                                <button
+                                  onClick={() => setEditingField('adeli')}
+                                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                  <Edit3 className="h-3 w-3 text-gray-400 hover:text-green-600" />
+                                </button>
+                              </div>
+                            )}
                           </div>
                           <div className="flex items-center space-x-2">
                             <FileText className="h-4 w-4 text-green-600" />
                             <span className="text-sm font-medium text-gray-700">SIRET:</span>
-                            <span className="text-sm font-mono text-gray-900">12345678901234</span>
+                            {editingField === 'siret' ? (
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="text"
+                                  value={practitionerInfo.siret}
+                                  onChange={(e) => setPractitionerInfo(prev => ({ ...prev, siret: e.target.value }))}
+                                  className="text-sm font-mono text-gray-900 border border-gray-300 rounded px-2 py-1 w-36"
+                                  maxLength={14}
+                                />
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    if (validateSIRET(practitionerInfo.siret)) {
+                                      handleFieldEdit('siret', practitionerInfo.siret);
+                                    } else {
+                                      alert('SIRET doit contenir exactement 14 chiffres');
+                                    }
+                                  }}
+                                  className="h-6 px-2"
+                                >
+                                  <Save className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setEditingField(null);
+                                    setPractitionerInfo(prev => ({ ...prev, siret: '12345678901234' }));
+                                  }}
+                                  className="h-6 px-2"
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center space-x-2">
+                                <span className="text-sm font-mono text-gray-900">{practitionerInfo.siret}</span>
+                                <button
+                                  onClick={() => setEditingField('siret')}
+                                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                  <Edit3 className="h-3 w-3 text-gray-400 hover:text-green-600" />
+                                </button>
+                              </div>
+                            )}
                           </div>
                         </div>
                         <div className="space-y-2">
                           <div className="flex items-center space-x-2">
                             <MapPin className="h-4 w-4 text-green-600" />
-                            <span className="text-sm text-gray-700">15 rue République, 75011 Paris</span>
+                            {editingField === 'address' ? (
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="text"
+                                  value={practitionerInfo.address}
+                                  onChange={(e) => setPractitionerInfo(prev => ({ ...prev, address: e.target.value }))}
+                                  className="text-sm text-gray-700 border border-gray-300 rounded px-2 py-1 w-48"
+                                />
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleFieldEdit('address', practitionerInfo.address)}
+                                  className="h-6 px-2"
+                                >
+                                  <Save className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setEditingField(null);
+                                    setPractitionerInfo(prev => ({ ...prev, address: '15 rue République, 75011 Paris' }));
+                                  }}
+                                  className="h-6 px-2"
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center space-x-2">
+                                <span className="text-sm text-gray-700">{practitionerInfo.address}</span>
+                                <button
+                                  onClick={() => setEditingField('address')}
+                                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                  <Edit3 className="h-3 w-3 text-gray-400 hover:text-green-600" />
+                                </button>
+                              </div>
+                            )}
                           </div>
                           <div className="flex items-center space-x-2">
                             <Phone className="h-4 w-4 text-green-600" />
-                            <span className="text-sm text-gray-700">01 23 45 67 89</span>
+                            {editingField === 'phone' ? (
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="text"
+                                  value={practitionerInfo.phone}
+                                  onChange={(e) => setPractitionerInfo(prev => ({ ...prev, phone: e.target.value }))}
+                                  className="text-sm text-gray-700 border border-gray-300 rounded px-2 py-1 w-32"
+                                />
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    if (validatePhone(practitionerInfo.phone)) {
+                                      handleFieldEdit('phone', practitionerInfo.phone);
+                                    } else {
+                                      alert('Format de téléphone invalide');
+                                    }
+                                  }}
+                                  className="h-6 px-2"
+                                >
+                                  <Save className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setEditingField(null);
+                                    setPractitionerInfo(prev => ({ ...prev, phone: '01 23 45 67 89' }));
+                                  }}
+                                  className="h-6 px-2"
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center space-x-2">
+                                <span className="text-sm text-gray-700">{practitionerInfo.phone}</span>
+                                <button
+                                  onClick={() => setEditingField('phone')}
+                                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                  <Edit3 className="h-3 w-3 text-gray-400 hover:text-green-600" />
+                                </button>
+                              </div>
+                            )}
                           </div>
                           <div className="flex items-center space-x-2">
                             <Mail className="h-4 w-4 text-green-600" />
-                            <span className="text-sm text-gray-700">martin.dubois@feel-demo.fr</span>
+                            {editingField === 'email' ? (
+                              <div className="flex items-center space-x-2">
+                                <input
+                                  type="email"
+                                  value={practitionerInfo.email}
+                                  onChange={(e) => setPractitionerInfo(prev => ({ ...prev, email: e.target.value }))}
+                                  className="text-sm text-gray-700 border border-gray-300 rounded px-2 py-1 w-48"
+                                />
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    if (validateEmail(practitionerInfo.email)) {
+                                      handleFieldEdit('email', practitionerInfo.email);
+                                    } else {
+                                      alert('Format d\'email invalide');
+                                    }
+                                  }}
+                                  className="h-6 px-2"
+                                >
+                                  <Save className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setEditingField(null);
+                                    setPractitionerInfo(prev => ({ ...prev, email: 'martin.dubois@feel-demo.fr' }));
+                                  }}
+                                  className="h-6 px-2"
+                                >
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center space-x-2">
+                                <span className="text-sm text-gray-700">{practitionerInfo.email}</span>
+                                <button
+                                  onClick={() => setEditingField('email')}
+                                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                  <Edit3 className="h-3 w-3 text-gray-400 hover:text-green-600" />
+                                </button>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
                       
                       {/* Spécialités */}
-                      <div className="flex flex-wrap gap-2">
-                        <Badge variant="outline" className="text-green-600 border-green-200">
-                          Implantologie
-                        </Badge>
-                        <Badge variant="outline" className="text-green-600 border-green-200">
-                          Chirurgie Orale
-                        </Badge>
-                        <Badge variant="outline" className="text-green-600 border-green-200">
-                          Parodontologie
-                        </Badge>
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <h4 className="text-sm font-medium text-gray-700">Spécialités Dentaires</h4>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setShowSpecialtySelector(!showSpecialtySelector)}
+                            disabled={specialties.length >= 5}
+                            className="h-6 px-2 text-xs"
+                          >
+                            <Plus className="h-3 w-3 mr-1" />
+                            Ajouter
+                          </Button>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {specialties.map((specialty, index) => (
+                            <Badge 
+                              key={index}
+                              variant="outline" 
+                              className="text-green-600 border-green-200 hover:bg-green-50 cursor-pointer group relative"
+                            >
+                              {specialty}
+                              <button
+                                onClick={() => handleSpecialtyRemove(specialty)}
+                                className="ml-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <X className="h-3 w-3 text-red-500 hover:text-red-700" />
+                              </button>
+                            </Badge>
+                          ))}
+                        </div>
+                        
+                        {/* Sélecteur de spécialités */}
+                        {showSpecialtySelector && (
+                          <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                            <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
+                              {availableSpecialties
+                                .filter(s => !specialties.includes(s))
+                                .map((specialty) => (
+                                  <button
+                                    key={specialty}
+                                    onClick={() => handleSpecialtyAdd(specialty)}
+                                    className="text-left text-xs p-2 hover:bg-green-100 rounded transition-colors"
+                                  >
+                                    {specialty}
+                                  </button>
+                                ))}
+                            </div>
+                            <div className="mt-2 pt-2 border-t border-gray-200">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => setShowSpecialtySelector(false)}
+                                className="h-6 px-2 text-xs"
+                              >
+                                Fermer
+                              </Button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -390,11 +889,22 @@ export default function DentistCockpit() {
                   </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {ssoConnections.map((connection, index) => (
-                      <div key={index} className={`p-4 rounded-lg border-2 transition-all duration-200 hover:shadow-md ${
-                        connection.status === 'connected' ? 'border-green-200 bg-green-50' :
-                        connection.status === 'pending' ? 'border-yellow-200 bg-yellow-50' :
-                        'border-red-200 bg-red-50'
-                      }`}>
+                      <div 
+                        key={index} 
+                        onClick={() => handleOrganismeClick(connection)}
+                        className={`p-4 rounded-lg border-2 transition-all duration-200 cursor-pointer group relative ${
+                          connection.status === 'connected' ? 
+                            'border-green-200 bg-green-50 hover:border-green-300 hover:shadow-lg hover:bg-green-100' :
+                          connection.status === 'pending' ? 
+                            'border-yellow-200 bg-yellow-50 hover:border-yellow-300 hover:shadow-lg hover:bg-yellow-100 animate-pulse' :
+                            'border-red-200 bg-red-50 hover:border-red-300 hover:shadow-lg hover:bg-red-100'
+                        }`}
+                      >
+                        {/* Icône de lien externe au hover */}
+                        <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                          <ExternalLink className="h-4 w-4 text-gray-400" />
+                        </div>
+                        
                         <div className="flex items-start justify-between mb-3">
                           <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${connection.bgColor}`}>
                             <connection.icon className={`h-5 w-5 ${connection.color}`} />
@@ -416,9 +926,10 @@ export default function DentistCockpit() {
                               {connection.status === 'connected' ? `Dernière sync: ${connection.lastSync}` :
                                connection.status === 'pending' ? 'Reconnexion requise' : 'Identifiants expirés'}
                             </span>
-                            <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                              <ExternalLink className="h-3 w-3" />
-                            </Button>
+                            <span className="text-xs text-gray-400 group-hover:text-gray-600 transition-colors">
+                              {connection.status === 'connected' ? 'Cliquer pour accéder' :
+                               connection.status === 'pending' ? 'Cliquer pour plus d\'infos' : 'Cliquer pour résoudre'}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -576,6 +1087,195 @@ export default function DentistCockpit() {
           </Card>
         </div>
       </div>
+
+      {/* Modal Upload Photo */}
+      {showPhotoModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Changer la photo de profil</h3>
+              <button
+                onClick={() => setShowPhotoModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              {/* Prévisualisation */}
+              <div className="flex justify-center">
+                <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center border-4 border-gray-200">
+                  {profilePhoto ? (
+                    <Image
+                      src={profilePhoto}
+                      alt="Prévisualisation"
+                      width={96}
+                      height={96}
+                      className="w-24 h-24 rounded-full object-cover"
+                    />
+                  ) : (
+                    <User className="h-12 w-12 text-gray-400" />
+                  )}
+                </div>
+              </div>
+              
+              {/* Upload */}
+              <div className="text-center">
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handlePhotoUpload}
+                  className="hidden"
+                  id="photo-upload"
+                />
+                <label
+                  htmlFor="photo-upload"
+                  className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 cursor-pointer"
+                >
+                  <Camera className="h-4 w-4 mr-2" />
+                  Choisir une photo
+                </label>
+                <p className="text-xs text-gray-500 mt-2">
+                  Formats acceptés : JPG, PNG, WebP (max 2MB)
+                </p>
+              </div>
+              
+              {/* Boutons */}
+              <div className="flex space-x-3 pt-4">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowPhotoModal(false)}
+                  className="flex-1"
+                >
+                  Annuler
+                </Button>
+                <Button
+                  onClick={() => setShowPhotoModal(false)}
+                  className="flex-1"
+                  disabled={!profilePhoto}
+                >
+                  Valider
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast de succès */}
+      {showSuccess && (
+        <div className="fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 flex items-center space-x-2">
+          <CheckCircle className="h-4 w-4" />
+          <span>Modification sauvegardée !</span>
+        </div>
+      )}
+
+      {/* Spinner de sauvegarde */}
+      {isSaving && (
+        <div className="fixed top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 flex items-center space-x-2">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          <span>Sauvegarde...</span>
+        </div>
+      )}
+
+      {/* Modal Organisme */}
+      {showOrganismeModal && selectedOrganisme && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">
+                {selectedOrganisme.status === 'pending' ? 'Connexion en cours' : 'Problème de connexion'}
+              </h3>
+              <button
+                onClick={() => setShowOrganismeModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              {/* Icône et nom de l'organisme */}
+              <div className="flex items-center space-x-3">
+                <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${selectedOrganisme.bgColor}`}>
+                  <selectedOrganisme.icon className={`h-6 w-6 ${selectedOrganisme.color}`} />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-gray-900">{selectedOrganisme.name}</h4>
+                  <p className="text-sm text-gray-600">{selectedOrganisme.fullName}</p>
+                </div>
+              </div>
+              
+              {/* Message selon le statut */}
+              {selectedOrganisme.status === 'pending' ? (
+                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                  <p className="text-sm text-yellow-800">
+                    Votre demande de connexion est en cours de traitement. Vous recevrez une notification dès l'activation.
+                  </p>
+                </div>
+              ) : (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <p className="text-sm text-red-800">
+                    Identifiants expirés. Reconnexion nécessaire pour accéder aux services.
+                  </p>
+                </div>
+              )}
+              
+              {/* Boutons d'action */}
+              <div className="flex space-x-3 pt-4">
+                {selectedOrganisme.status === 'pending' ? (
+                  <>
+                    <Button
+                      variant="outline"
+                      onClick={() => handleReconnect(selectedOrganisme)}
+                      className="flex-1"
+                    >
+                      Relancer la connexion
+                    </Button>
+                    <Button
+                      onClick={() => handleAccessWebsite(selectedOrganisme)}
+                      className="flex-1"
+                    >
+                      Accéder au site
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      onClick={() => handleReconnect(selectedOrganisme)}
+                      className="flex-1"
+                    >
+                      Reconnecter maintenant
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => handleAccessWebsite(selectedOrganisme)}
+                      className="flex-1"
+                    >
+                      Site DGFiP
+                    </Button>
+                  </>
+                )}
+              </div>
+              
+              {/* Lien d'aide pour DGFiP */}
+              {selectedOrganisme.status === 'error' && (
+                <div className="text-center pt-2">
+                  <a 
+                    href="https://www.impots.gouv.fr/portail/contact" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                  >
+                    Besoin d'assistance ?
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 } 
