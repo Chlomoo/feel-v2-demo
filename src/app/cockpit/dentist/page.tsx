@@ -13,7 +13,8 @@ import {
   MapPin, Phone, Mail, Award, Shield, CheckCircle,
   AlertTriangle, ExternalLink, Download, Upload, Edit3,
   X, Save, Camera, Trash2, ChevronDown, Loader2,
-  GraduationCap, BookOpen, Briefcase, AlertCircle
+  GraduationCap, BookOpen, Briefcase, AlertCircle,
+  Eye, FileImage, File, FileSpreadsheet, FileType
 } from 'lucide-react';
 
 export default function DentistCockpit() {
@@ -131,6 +132,139 @@ export default function DentistCockpit() {
     title: '',
     location: '',
     description: ''
+  });
+
+  // Types pour le système de documents
+  type DocumentCategory = 'diplomes' | 'assurances' | 'contrats' | 'fiscales' | 'autres';
+  type AlertLevel = 'none' | 'info' | 'warning' | 'critical';
+
+  interface Document {
+    id: string;
+    name: string;
+    category: DocumentCategory;
+    fileUrl: string;
+    fileSize: number;
+    fileType: string;
+    uploadDate: Date;
+    expirationDate?: Date;
+    description?: string;
+    tags: string[];
+    isExpired: boolean;
+    alertLevel: AlertLevel;
+  }
+
+  // États pour le coffre-fort documents
+  const [showDocumentModal, setShowDocumentModal] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<DocumentCategory | null>(null);
+  const [documents, setDocuments] = useState<Document[]>([
+    // Diplômes & Certifications
+    {
+      id: '1',
+      name: 'Diplôme Chirurgien-Dentiste',
+      category: 'diplomes',
+      fileUrl: '/documents/diplome.pdf',
+      fileSize: 2048576,
+      fileType: 'pdf',
+      uploadDate: new Date('2010-07-01'),
+      description: 'Diplôme d\'État de docteur en chirurgie dentaire',
+      tags: ['diplôme', 'formation', 'université'],
+      isExpired: false,
+      alertLevel: 'none'
+    },
+    {
+      id: '2',
+      name: 'Certification ITI Implantologie',
+      category: 'diplomes',
+      fileUrl: '/documents/certification-iti.pdf',
+      fileSize: 1536000,
+      fileType: 'pdf',
+      uploadDate: new Date('2015-03-15'),
+      expirationDate: new Date('2025-03-15'),
+      description: 'Certification internationale en implantologie',
+      tags: ['certification', 'implantologie', 'iti'],
+      isExpired: false,
+      alertLevel: 'info'
+    },
+    // Assurances & RC
+    {
+      id: '3',
+      name: 'Assurance RC Professionnelle',
+      category: 'assurances',
+      fileUrl: '/documents/rc-professionnelle.pdf',
+      fileSize: 1024000,
+      fileType: 'pdf',
+      uploadDate: new Date('2024-01-01'),
+      expirationDate: new Date('2024-12-31'),
+      description: 'Assurance responsabilité civile professionnelle',
+      tags: ['assurance', 'rc', 'professionnelle'],
+      isExpired: true,
+      alertLevel: 'critical'
+    },
+    {
+      id: '4',
+      name: 'Assurance Cyber',
+      category: 'assurances',
+      fileUrl: '/documents/cyber-assurance.pdf',
+      fileSize: 768000,
+      fileType: 'pdf',
+      uploadDate: new Date('2024-06-01'),
+      expirationDate: new Date('2025-05-31'),
+      description: 'Assurance cyber-risques',
+      tags: ['assurance', 'cyber', 'sécurité'],
+      isExpired: false,
+      alertLevel: 'none'
+    },
+    // Contrats & Avenants
+    {
+      id: '5',
+      name: 'Contrat de Collaboration Dr. Roussel',
+      category: 'contrats',
+      fileUrl: '/documents/contrat-roussel.pdf',
+      fileSize: 512000,
+      fileType: 'pdf',
+      uploadDate: new Date('2018-09-01'),
+      expirationDate: new Date('2026-08-31'),
+      description: 'Contrat de collaboration 50/50',
+      tags: ['contrat', 'collaboration', 'roussel'],
+      isExpired: false,
+      alertLevel: 'none'
+    },
+    // Déclarations Fiscales
+    {
+      id: '6',
+      name: 'Déclaration 2035 - 2023',
+      category: 'fiscales',
+      fileUrl: '/documents/declaration-2035-2023.pdf',
+      fileSize: 256000,
+      fileType: 'pdf',
+      uploadDate: new Date('2024-05-15'),
+      description: 'Déclaration fiscale 2035 pour l\'année 2023',
+      tags: ['fiscal', '2035', '2023'],
+      isExpired: false,
+      alertLevel: 'none'
+    },
+    // Autres Documents
+    {
+      id: '7',
+      name: 'Autorisation d\'ouverture',
+      category: 'autres',
+      fileUrl: '/documents/autorisation-ouverture.pdf',
+      fileSize: 384000,
+      fileType: 'pdf',
+      uploadDate: new Date('2011-01-01'),
+      description: 'Autorisation préfectorale d\'ouverture de cabinet',
+      tags: ['autorisation', 'ouverture', 'préfecture'],
+      isExpired: false,
+      alertLevel: 'none'
+    }
+  ]);
+
+  const [showAddDocumentModal, setShowAddDocumentModal] = useState(false);
+  const [newDocument, setNewDocument] = useState<Partial<Document>>({
+    name: '',
+    category: 'diplomes',
+    description: '',
+    tags: []
   });
   
   // Liste des spécialités disponibles
@@ -341,6 +475,143 @@ export default function DentistCockpit() {
       location: '',
       description: ''
     });
+  };
+
+  // Fonctions pour le système de documents
+  const getCategoryLabel = (category: DocumentCategory) => {
+    switch (category) {
+      case 'diplomes': return 'Diplômes & Certifications';
+      case 'assurances': return 'Assurances & RC';
+      case 'contrats': return 'Contrats & Avenants';
+      case 'fiscales': return 'Déclarations Fiscales';
+      case 'autres': return 'Autres Documents';
+      default: return 'Documents';
+    }
+  };
+
+  const getCategoryIcon = (category: DocumentCategory) => {
+    switch (category) {
+      case 'diplomes': return Award;
+      case 'assurances': return Shield;
+      case 'contrats': return FileText;
+      case 'fiscales': return Calculator;
+      case 'autres': return Package;
+      default: return File;
+    }
+  };
+
+  const getFileIcon = (fileType: string) => {
+    switch (fileType.toLowerCase()) {
+      case 'pdf': return File;
+      case 'jpg':
+      case 'jpeg':
+      case 'png': return FileImage;
+      case 'doc':
+      case 'docx': return FileText;
+      case 'xls':
+      case 'xlsx': return FileSpreadsheet;
+      default: return FileType;
+    }
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const getAlertBadgeColor = (alertLevel: AlertLevel) => {
+    switch (alertLevel) {
+      case 'critical': return 'bg-red-100 text-red-800 border-red-200';
+      case 'warning': return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'info': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      default: return 'bg-green-100 text-green-800 border-green-200';
+    }
+  };
+
+  const getAlertBadgeText = (alertLevel: AlertLevel) => {
+    switch (alertLevel) {
+      case 'critical': return 'Expiré';
+      case 'warning': return 'Expire bientôt';
+      case 'info': return 'À surveiller';
+      default: return 'Valide';
+    }
+  };
+
+  const getDocumentsByCategory = (category: DocumentCategory) => {
+    return documents.filter(doc => doc.category === category);
+  };
+
+  const getTotalDocumentsCount = () => {
+    return documents.length;
+  };
+
+  const getDocumentsCountByCategory = (category: DocumentCategory) => {
+    return getDocumentsByCategory(category).length;
+  };
+
+  const handleCategoryClick = (category: DocumentCategory) => {
+    setSelectedCategory(category);
+    setShowDocumentModal(true);
+  };
+
+  const handleCloseDocumentModal = () => {
+    setShowDocumentModal(false);
+    setSelectedCategory(null);
+  };
+
+  const handleAddDocument = () => {
+    setNewDocument({
+      name: '',
+      category: selectedCategory || 'diplomes',
+      description: '',
+      tags: []
+    });
+    setShowAddDocumentModal(true);
+  };
+
+  const handleSaveDocument = () => {
+    if (!newDocument.name || !newDocument.category) {
+      alert('Le nom et la catégorie sont obligatoires');
+      return;
+    }
+
+    const newDoc: Document = {
+      id: Date.now().toString(),
+      name: newDocument.name!,
+      category: newDocument.category!,
+      fileUrl: '/documents/' + newDocument.name!.toLowerCase().replace(/\s+/g, '-') + '.pdf',
+      fileSize: 1024000, // Mock size
+      fileType: 'pdf',
+      uploadDate: new Date(),
+      expirationDate: newDocument.expirationDate,
+      description: newDocument.description,
+      tags: newDocument.tags || [],
+      isExpired: false,
+      alertLevel: 'none'
+    };
+
+    setDocuments(prev => [...prev, newDoc]);
+    setShowAddDocumentModal(false);
+    setNewDocument({
+      name: '',
+      category: 'diplomes',
+      description: '',
+      tags: []
+    });
+  };
+
+  const handleDeleteDocument = (documentId: string) => {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce document ?')) {
+      setDocuments(prev => prev.filter(doc => doc.id !== documentId));
+    }
+  };
+
+  const handleDownloadDocument = (document: Document) => {
+    // Simulation de téléchargement
+    alert(`Téléchargement de "${document.name}"...`);
   };
 
   // Fonctions de gestion des organismes
@@ -1183,31 +1454,39 @@ export default function DentistCockpit() {
                   <div>
                     <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
                       <FileText className="h-5 w-5 mr-2 text-green-600" />
-                      Coffre-Fort Documents (42)
+                      Coffre-Fort Documents ({getTotalDocumentsCount()})
                     </h4>
                     <div className="space-y-2">
-                      {[
-                        { category: 'Diplômes & Certifications', count: 8, icon: Award },
-                        { category: 'Assurances & RC', count: 5, icon: Shield },
-                        { category: 'Contrats & Avenants', count: 12, icon: FileText },
-                        { category: 'Déclarations Fiscales', count: 10, icon: Calculator },
-                        { category: 'Autres Documents', count: 7, icon: Package }
-                      ].map((doc, index) => (
-                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                          <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                              <doc.icon className="h-4 w-4 text-green-600" />
+                      {(['diplomes', 'assurances', 'contrats', 'fiscales', 'autres'] as DocumentCategory[]).map((category) => {
+                        const CategoryIcon = getCategoryIcon(category);
+                        const count = getDocumentsCountByCategory(category);
+                        
+                        return (
+                          <div 
+                            key={category}
+                            onClick={() => handleCategoryClick(category)}
+                            className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 hover:border-green-300 border border-transparent transition-all duration-200 cursor-pointer group"
+                          >
+                            <div className="flex items-center space-x-3">
+                              <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                                <CategoryIcon className="h-4 w-4 text-green-600" />
+                              </div>
+                              <div>
+                                <p className="text-sm font-medium text-gray-900 group-hover:text-green-700 transition-colors">
+                                  {getCategoryLabel(category)}
+                                </p>
+                                <p className="text-xs text-gray-500">{count} document{count > 1 ? 's' : ''}</p>
+                              </div>
                             </div>
-                            <div>
-                              <p className="text-sm font-medium text-gray-900">{doc.category}</p>
-                              <p className="text-xs text-gray-500">{doc.count} documents</p>
+                            <div className="flex items-center space-x-2">
+                              <span className="text-xs text-gray-400 group-hover:text-green-600 transition-colors">
+                                Cliquer pour gérer
+                              </span>
+                              <Eye className="h-4 w-4 text-gray-400 group-hover:text-green-600 transition-colors" />
                             </div>
                           </div>
-                          <Button variant="ghost" size="sm">
-                            <Download className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -1235,8 +1514,8 @@ export default function DentistCockpit() {
                       <div className="flex items-start space-x-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                         <CheckCircle className="h-5 w-5 text-blue-600 mt-0.5" />
                         <div className="flex-1">
-                          <p className="text-sm font-medium text-blue-800">Nouveau patient inscrit</p>
-                          <p className="text-xs text-blue-600">M. Dupont a complété son profil en ligne</p>
+                          <p className="text-sm font-medium text-blue-800">Nouvelle mission SOS acceptée</p>
+                          <p className="text-xs text-blue-600">Mission urgente pour le 15 janvier - Assistante confirmée</p>
                         </div>
                       </div>
                     </div>
@@ -1528,6 +1807,206 @@ export default function DentistCockpit() {
                 className="bg-green-600 hover:bg-green-700"
               >
                 {editingEvent ? 'Sauvegarder' : 'Ajouter'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Gestion Documents */}
+      {showDocumentModal && selectedCategory && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Gestion - {getCategoryLabel(selectedCategory)}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {getDocumentsCountByCategory(selectedCategory)} document{getDocumentsCountByCategory(selectedCategory) > 1 ? 's' : ''} dans cette catégorie
+                </p>
+              </div>
+              <div className="flex items-center space-x-3">
+                <Button
+                  onClick={handleAddDocument}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  Ajouter un document
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleCloseDocumentModal}
+                  className="h-8 w-8 p-0"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              {getDocumentsByCategory(selectedCategory).map((document) => {
+                const FileIcon = getFileIcon(document.fileType);
+                
+                return (
+                  <div key={document.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors group">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center border border-gray-200">
+                        <FileIcon className="h-5 w-5 text-gray-600" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-2 mb-1">
+                          <h4 className="font-medium text-gray-900">{document.name}</h4>
+                          <Badge className={`text-xs ${getAlertBadgeColor(document.alertLevel)}`}>
+                            {getAlertBadgeText(document.alertLevel)}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center space-x-4 text-xs text-gray-500">
+                          <span>Ajouté le {document.uploadDate.toLocaleDateString('fr-FR')}</span>
+                          <span>{formatFileSize(document.fileSize)}</span>
+                          {document.expirationDate && (
+                            <span>Expire le {document.expirationDate.toLocaleDateString('fr-FR')}</span>
+                          )}
+                        </div>
+                        {document.description && (
+                          <p className="text-xs text-gray-600 mt-1">{document.description}</p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDownloadDocument(document)}
+                        className="h-8 w-8 p-0 hover:bg-blue-100"
+                      >
+                        <Download className="h-4 w-4 text-blue-600" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteDocument(document.id)}
+                        className="h-8 w-8 p-0 hover:bg-red-100"
+                      >
+                        <Trash2 className="h-4 w-4 text-red-600" />
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
+              
+              {getDocumentsByCategory(selectedCategory).length === 0 && (
+                <div className="text-center py-8">
+                  <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-500 mb-4">Aucun document dans cette catégorie</p>
+                  <Button
+                    onClick={handleAddDocument}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    Ajouter le premier document
+                  </Button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Ajout Document */}
+      {showAddDocumentModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Ajouter un document
+              </h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowAddDocumentModal(false)}
+                className="h-8 w-8 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Nom du document */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Nom du document <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={newDocument.name || ''}
+                  onChange={(e) => setNewDocument(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Ex: Diplôme Chirurgien-Dentiste"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  required
+                />
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Description
+                </label>
+                <textarea
+                  value={newDocument.description || ''}
+                  onChange={(e) => setNewDocument(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Description du document (optionnel)"
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                />
+              </div>
+
+              {/* Date d'expiration */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Date d'expiration
+                </label>
+                <input
+                  type="date"
+                  value={newDocument.expirationDate ? newDocument.expirationDate.toISOString().split('T')[0] : ''}
+                  onChange={(e) => setNewDocument(prev => ({ 
+                    ...prev, 
+                    expirationDate: e.target.value ? new Date(e.target.value) : undefined 
+                  }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Recommandé pour les assurances, contrats et certifications
+                </p>
+              </div>
+
+              {/* Zone d'upload */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Fichier
+                </label>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-400 transition-colors">
+                  <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                  <p className="text-sm text-gray-600 mb-1">Glisser-déposer votre fichier ici</p>
+                  <p className="text-xs text-gray-500">ou cliquer pour sélectionner</p>
+                  <p className="text-xs text-gray-400 mt-2">Formats acceptés: PDF, JPG, PNG, DOCX, XLSX (max 10MB)</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
+              <Button
+                variant="outline"
+                onClick={() => setShowAddDocumentModal(false)}
+              >
+                Annuler
+              </Button>
+              <Button
+                onClick={handleSaveDocument}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                Ajouter le document
               </Button>
             </div>
           </div>
