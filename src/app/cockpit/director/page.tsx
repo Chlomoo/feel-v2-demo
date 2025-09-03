@@ -210,18 +210,18 @@ export default function DirectorCockpit() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Direction Feel */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-[#F5F1E8] shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              {/* Logo Feel */}
+              {/* Logo Smile by Feel */}
               <Link href="/" className="flex items-center">
                 <Image
-                  src="/logos/Logo FEEL .png"
-                  alt="Feel Logo"
-                  width={120}
-                  height={40}
-                  className="h-8 w-auto mr-4"
+                  src="/logos/Logo Smile By Feel .png"
+                  alt="Smile by Feel Logo"
+                  width={140}
+                  height={45}
+                  className="h-9 w-auto mr-4"
                 />
               </Link>
               <div className="h-8 w-px bg-gray-300" />

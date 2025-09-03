@@ -137,18 +137,18 @@ export default function AssistantCockpit() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header Mobile-First Feel */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-[#F5F1E8] shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              {/* Logo Feel compact */}
+              {/* Logo Smile by Feel */}
               <Link href="/" className="flex items-center">
                 <Image
-                  src="/logos/Logo FEEL .png"
-                  alt="Feel Logo"
-                  width={80}
-                  height={30}
-                  className="h-6 w-auto mr-3"
+                  src="/logos/Logo Smile By Feel .png"
+                  alt="Smile by Feel Logo"
+                  width={140}
+                  height={45}
+                  className="h-9 w-auto mr-4"
                 />
               </Link>
               <div className="h-6 w-px bg-gray-300" />
