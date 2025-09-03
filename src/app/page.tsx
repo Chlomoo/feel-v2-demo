@@ -425,23 +425,19 @@ export default function HomePage() {
               <Card key={module.id} className="hover:shadow-lg transition-all duration-300">
                 <CardHeader>
                   <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
-                    {module.icon === 'Users' && <Users className="h-6 w-6 text-green-600" />}
-                    {module.icon === 'Calculator' && <Calculator className="h-6 w-6 text-green-600" />}
-                    {module.icon === 'Package' && <Package className="h-6 w-6 text-green-600" />}
-                    {module.icon === 'FileText' && <FileText className="h-6 w-6 text-green-600" />}
-                    {module.icon === 'User' && <User className="h-6 w-6 text-green-600" />}
-                    {module.icon === 'Newspaper' && <Newspaper className="h-6 w-6 text-green-600" />}
+                    {module.icone === 'Users' && <Users className="h-6 w-6 text-green-600" />}
+                    {module.icone === 'Calculator' && <Calculator className="h-6 w-6 text-green-600" />}
+                    {module.icone === 'Package' && <Package className="h-6 w-6 text-green-600" />}
+                    {module.icone === 'FileText' && <FileText className="h-6 w-6 text-green-600" />}
+                    {module.icone === 'User' && <User className="h-6 w-6 text-green-600" />}
+                    {module.icone === 'Newspaper' && <Newspaper className="h-6 w-6 text-green-600" />}
+                    {module.icone === 'Heart' && <Heart className="h-6 w-6 text-green-600" />}
                   </div>
-                  <CardTitle className="text-lg font-bold text-[#7FB069]">{module.nom}</CardTitle>
+                  <CardTitle className="text-lg font-bold text-[#7FB069]">{module.titre}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 italic">
-                    {module.id === 'sos-assistante' && "La révolution de l'intérim dentaire"}
-                    {module.id === 'comptabilite' && "L'automatisation comptable spécialisée dentaire"}
-                    {module.id === 'stock' && "L'intelligence artificielle au service des achats"}
-                    {module.id === 'contrats' && "La dématérialisation juridique 100% conforme"}
-                    {module.id === 'profil' && "Le hub central digital du cabinet"}
-                    {module.id === 'actualites' && "Échanger avec la communauté Feel et formez-vous selon vos besoins"}
+                    {module.description}
                   </p>
                 </CardContent>
               </Card>

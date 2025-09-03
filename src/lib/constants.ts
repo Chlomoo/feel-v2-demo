@@ -11,9 +11,9 @@ export const FEEL_CONFIG = {
   
   // Routes des cockpits
   COCKPIT_ROUTES: {
-    DENTIST: "/dashboard/chirurgien",
-    ASSISTANT: "/dashboard/assistante",
-    DIRECTOR: "/dashboard/directeur"
+    DENTIST: "/cockpit/dentist",
+    ASSISTANT: "/cockpit/assistant",
+    DIRECTOR: "/cockpit/director"
   },
   
   // Comptes de démonstration
@@ -37,6 +37,65 @@ export const FEEL_CONFIG = {
       role: "Directrice de Structure"
     }
   },
+
+  // Personas pour la landing page
+  PERSONAS: [
+    {
+      id: 'praticien',
+      titre: 'Chirurgien-Dentiste',
+      description: 'Optimisez votre pratique avec des outils intelligents'
+    },
+    {
+      id: 'assistante',
+      titre: 'Assistante Dentaire',
+      description: 'Simplifiez votre quotidien avec des solutions digitales'
+    },
+    {
+      id: 'directeur',
+      titre: 'Directeur de Structure',
+      description: 'Supervisez vos équipes avec des tableaux de bord avancés'
+    }
+  ],
+
+  // Modules pour la landing page
+  MODULES: [
+    {
+      id: 'profil',
+      titre: 'Profil Praticien',
+      description: 'Carte d\'identité professionnelle digitale complète',
+      icone: 'User'
+    },
+    {
+      id: 'sos',
+      titre: 'SOS Assistante',
+      description: 'Matching intelligent pour missions urgentes',
+      icone: 'Heart'
+    },
+    {
+      id: 'comptabilite',
+      titre: 'Smart Comptabilité',
+      description: 'Gestion financière automatisée et connectée',
+      icone: 'Calculator'
+    },
+    {
+      id: 'stock',
+      titre: 'Gestion Stock',
+      description: 'Stock prédictif avec commandes automatiques',
+      icone: 'Package'
+    },
+    {
+      id: 'contrats',
+      titre: 'Contrats Numériques',
+      description: 'Templates légaux et signatures électroniques',
+      icone: 'FileText'
+    },
+    {
+      id: 'news',
+      titre: 'News & Formations',
+      description: 'Veille professionnelle et formations DPC',
+      icone: 'Newspaper'
+    }
+  ],
   
   // Couleurs Feel
   COLORS: {

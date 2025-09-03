@@ -3,8 +3,51 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowLeft, Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { ArrowLeft, Mail, Lock, Eye, EyeOff, User, Users, Shield } from 'lucide-react';
 
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+// Comptes de démonstration Feel
+const demoAccounts = {
+  'martin.dubois@feel-demo.fr': { 
+    password: 'demo2025', 
+    profile: 'dentist',
+    redirect: '/cockpit/dentist',
+    data: {
+      name: 'Dr. Martin Dubois',
+      cabinet: 'Centre Dentaire République',
+      location: 'Paris 11e',
+      specialties: ['Implantologie', 'Chirurgie orale'],
+      rpps: '10003123456',
+      adeli: '750012345'
+    }
+  },
+  'marie.lefebvre@feel-demo.fr': { 
+    password: 'demo2025', 
+    profile: 'assistant',
+    redirect: '/cockpit/assistant',
+    data: {
+      name: 'Marie Lefebvre',
+      experience: '5 ans',
+      specialties: ['Chirurgie', 'Implantologie'],
+      rating: 4.8,
+      location: 'Paris 10e'
+    }
+  },
+  'sophie.chen@feel-demo.fr': { 
+    password: 'demo2025', 
+    profile: 'director',
+    redirect: '/cockpit/director',
+    data: {
+      name: 'Sophie Chen',
+      group: 'Groupe Dental Excellence',
+      sites: ['Paris Centre', 'Boulogne', 'Vincennes', 'Créteil', 'Neuilly'],
+      practitioners: 12,
+      assistants: 18
+    }
+  }
+};
 
 export default function SignInPage() {
   const [email, setEmail] = useState('');
@@ -12,6 +55,7 @@ export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedDemo, setSelectedDemo] = useState<string | null>(null);
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,8 +63,19 @@ export default function SignInPage() {
     setError(null);
     
     try {
-      // TODO: Implémenter la connexion
+      // Vérification des comptes de démonstration
+      if (demoAccounts[email as keyof typeof demoAccounts]) {
+        const account = demoAccounts[email as keyof typeof demoAccounts];
+        if (account.password === password) {
+          // Redirection vers le cockpit approprié
+          window.location.href = account.redirect;
+          return;
+        }
+      }
+      
+      // Comportement normal pour les vrais comptes utilisateurs
       console.log('Sign In:', { email, password });
+      setError('Identifiants incorrects ou compte non reconnu');
     } catch (err) {
       setError('Erreur lors de la connexion');
     } finally {
@@ -54,6 +109,13 @@ export default function SignInPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDemoAccount = (email: string) => {
+    setEmail(email);
+    setPassword('demo2025');
+    setSelectedDemo(email);
+    setError(null);
   };
 
   return (
@@ -204,6 +266,91 @@ export default function SignInPage() {
                 <Mail className="h-5 w-5" />
                 <span>{isLoading ? 'Connexion...' : 'Continuer avec Apple'}</span>
               </button>
+            </div>
+
+            {/* Comptes de démonstration */}
+            <div className="mt-8">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4 text-center">
+                🎯 Comptes de Démonstration Feel
+              </h3>
+              <div className="space-y-3">
+                <button
+                  onClick={() => handleDemoAccount('martin.dubois@feel-demo.fr')}
+                  className={`w-full p-4 rounded-lg border-2 transition-all duration-200 text-left ${
+                    selectedDemo === 'martin.dubois@feel-demo.fr'
+                      ? 'border-green-500 bg-green-50'
+                      : 'border-gray-200 bg-white hover:border-green-300 hover:shadow-md'
+                  }`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                      <User className="h-5 w-5 text-green-600" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900">Dr. Martin Dubois</div>
+                      <div className="text-sm text-gray-600">Chirurgien-Dentiste</div>
+                      <div className="text-xs text-gray-500">Centre République, Paris 11e</div>
+                    </div>
+                    <div className="text-xs text-green-600 font-mono">
+                      martin.dubois@feel-demo.fr
+                    </div>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => handleDemoAccount('marie.lefebvre@feel-demo.fr')}
+                  className={`w-full p-4 rounded-lg border-2 transition-all duration-200 text-left ${
+                    selectedDemo === 'marie.lefebvre@feel-demo.fr'
+                      ? 'border-purple-500 bg-purple-50'
+                      : 'border-gray-200 bg-white hover:border-purple-300 hover:shadow-md'
+                  }`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                      <Users className="h-5 w-5 text-purple-600" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900">Marie Lefebvre</div>
+                      <div className="text-sm text-gray-600">Assistante Dentaire</div>
+                      <div className="text-xs text-gray-500">5 ans expérience, Paris 10e</div>
+                    </div>
+                    <div className="text-xs text-purple-600 font-mono">
+                      marie.lefebvre@feel-demo.fr
+                    </div>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => handleDemoAccount('sophie.chen@feel-demo.fr')}
+                  className={`w-full p-4 rounded-lg border-2 transition-all duration-200 text-left ${
+                    selectedDemo === 'sophie.chen@feel-demo.fr'
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 bg-white hover:border-blue-300 hover:shadow-md'
+                  }`}
+                >
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                      <Shield className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900">Sophie Chen</div>
+                      <div className="text-sm text-gray-600">Directrice de Structure</div>
+                      <div className="text-xs text-gray-500">5 sites, 30 professionnels</div>
+                    </div>
+                    <div className="text-xs text-blue-600 font-mono">
+                      sophie.chen@feel-demo.fr
+                    </div>
+                  </div>
+                </button>
+              </div>
+
+              <div className="mt-4 text-center">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <p className="text-blue-700 text-xs">
+                    💡 <strong>Comment tester :</strong> Cliquez sur un compte de démonstration pour remplir automatiquement le formulaire, puis cliquez sur "Se connecter"
+                  </p>
+                </div>
+              </div>
             </div>
 
             {/* Lien vers l'inscription */}

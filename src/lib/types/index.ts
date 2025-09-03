@@ -42,7 +42,7 @@ export interface Mission {
 
 export interface Module {
   id: string;
-  nom: string;
+  titre: string;
   description: string;
   icone: string;
   actif: boolean;
