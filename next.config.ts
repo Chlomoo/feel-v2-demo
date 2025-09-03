@@ -7,12 +7,12 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
-  // Commenté temporairement pour le développement local
-  // output: 'export',
-  // trailingSlash: true,
-  // images: {
-  //   unoptimized: true,
-  // },
+  // Configuration pour le déploiement statique sur Netlify
+  output: 'export',
+  trailingSlash: true,
+  images: {
+    unoptimized: true,
+  },
 };
 
 export default nextConfig;
