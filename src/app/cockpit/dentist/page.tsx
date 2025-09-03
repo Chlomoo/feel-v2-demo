@@ -146,7 +146,8 @@ export default function DentistCockpit() {
     fileSize: number;
     fileType: string;
     uploadDate: Date;
-    expirationDate?: Date;
+    hasExpirationDate: boolean;        // NOUVEAU : checkbox état
+    expirationDate?: Date;             // CONDITIONNEL selon checkbox
     description?: string;
     tags: string[];
     isExpired: boolean;
@@ -166,6 +167,7 @@ export default function DentistCockpit() {
       fileSize: 2048576,
       fileType: 'pdf',
       uploadDate: new Date('2010-07-01'),
+      hasExpirationDate: false,
       description: 'Diplôme d\'État de docteur en chirurgie dentaire',
       tags: ['diplôme', 'formation', 'université'],
       isExpired: false,
@@ -179,6 +181,7 @@ export default function DentistCockpit() {
       fileSize: 1536000,
       fileType: 'pdf',
       uploadDate: new Date('2015-03-15'),
+      hasExpirationDate: true,
       expirationDate: new Date('2025-03-15'),
       description: 'Certification internationale en implantologie',
       tags: ['certification', 'implantologie', 'iti'],
@@ -194,6 +197,7 @@ export default function DentistCockpit() {
       fileSize: 1024000,
       fileType: 'pdf',
       uploadDate: new Date('2024-01-01'),
+      hasExpirationDate: true,
       expirationDate: new Date('2024-12-31'),
       description: 'Assurance responsabilité civile professionnelle',
       tags: ['assurance', 'rc', 'professionnelle'],
@@ -208,6 +212,7 @@ export default function DentistCockpit() {
       fileSize: 768000,
       fileType: 'pdf',
       uploadDate: new Date('2024-06-01'),
+      hasExpirationDate: true,
       expirationDate: new Date('2025-05-31'),
       description: 'Assurance cyber-risques',
       tags: ['assurance', 'cyber', 'sécurité'],
@@ -223,6 +228,7 @@ export default function DentistCockpit() {
       fileSize: 512000,
       fileType: 'pdf',
       uploadDate: new Date('2018-09-01'),
+      hasExpirationDate: true,
       expirationDate: new Date('2026-08-31'),
       description: 'Contrat de collaboration 50/50',
       tags: ['contrat', 'collaboration', 'roussel'],
@@ -238,6 +244,7 @@ export default function DentistCockpit() {
       fileSize: 256000,
       fileType: 'pdf',
       uploadDate: new Date('2024-05-15'),
+      hasExpirationDate: false,
       description: 'Déclaration fiscale 2035 pour l\'année 2023',
       tags: ['fiscal', '2035', '2023'],
       isExpired: false,
@@ -252,6 +259,7 @@ export default function DentistCockpit() {
       fileSize: 384000,
       fileType: 'pdf',
       uploadDate: new Date('2011-01-01'),
+      hasExpirationDate: false,
       description: 'Autorisation préfectorale d\'ouverture de cabinet',
       tags: ['autorisation', 'ouverture', 'préfecture'],
       isExpired: false,
@@ -264,8 +272,20 @@ export default function DentistCockpit() {
     name: '',
     category: 'diplomes',
     description: '',
-    tags: []
+    tags: [],
+    hasExpirationDate: false
   });
+
+  // États pour les fonctionnalités avancées
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterExpiration, setFilterExpiration] = useState<'all' | 'expired' | 'expiring' | 'valid' | 'no-expiration'>('all');
+  const [sortBy, setSortBy] = useState<'name' | 'date' | 'expiration'>('name');
+  
+  // États pour l'upload de fichiers
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [dragActive, setDragActive] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   
   // Liste des spécialités disponibles
   const availableSpecialties = [
@@ -560,6 +580,10 @@ export default function DentistCockpit() {
   const handleCloseDocumentModal = () => {
     setShowDocumentModal(false);
     setSelectedCategory(null);
+    // Réinitialiser les filtres
+    setSearchQuery('');
+    setFilterExpiration('all');
+    setSortBy('name');
   };
 
   const handleAddDocument = () => {
@@ -567,14 +591,24 @@ export default function DentistCockpit() {
       name: '',
       category: selectedCategory || 'diplomes',
       description: '',
-      tags: []
+      tags: [],
+      hasExpirationDate: false
     });
+    // Réinitialiser les états de fichier
+    setSelectedFile(null);
+    setUploadError(null);
+    setDragActive(false);
     setShowAddDocumentModal(true);
   };
 
   const handleSaveDocument = () => {
     if (!newDocument.name || !newDocument.category) {
       alert('Le nom et la catégorie sont obligatoires');
+      return;
+    }
+    
+    if (!selectedFile) {
+      alert('Veuillez sélectionner un fichier');
       return;
     }
 
@@ -586,6 +620,7 @@ export default function DentistCockpit() {
       fileSize: 1024000, // Mock size
       fileType: 'pdf',
       uploadDate: new Date(),
+      hasExpirationDate: newDocument.hasExpirationDate || false,
       expirationDate: newDocument.expirationDate,
       description: newDocument.description,
       tags: newDocument.tags || [],
@@ -599,8 +634,13 @@ export default function DentistCockpit() {
       name: '',
       category: 'diplomes',
       description: '',
-      tags: []
+      tags: [],
+      hasExpirationDate: false
     });
+    // Réinitialiser les états de fichier
+    setSelectedFile(null);
+    setUploadError(null);
+    setDragActive(false);
   };
 
   const handleDeleteDocument = (documentId: string) => {
@@ -612,6 +652,127 @@ export default function DentistCockpit() {
   const handleDownloadDocument = (document: Document) => {
     // Simulation de téléchargement
     alert(`Téléchargement de "${document.name}"...`);
+  };
+
+  // Fonctions pour les suggestions intelligentes de durées
+  const getSuggestedExpirationDate = (category: DocumentCategory) => {
+    const today = new Date();
+    switch (category) {
+      case 'assurances':
+        // Assurances RC : +1 an
+        return new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
+      case 'diplomes':
+        // Formations DPC : +3 ans
+        return new Date(today.getFullYear() + 3, today.getMonth(), today.getDate());
+      case 'contrats':
+        // Contrats : +2 ans
+        return new Date(today.getFullYear() + 2, today.getMonth(), today.getDate());
+      case 'fiscales':
+        // Déclarations fiscales : +1 an
+        return new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
+      default:
+        // Autres : +1 an par défaut
+        return new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
+    }
+  };
+
+  const getSuggestedDurationText = (category: DocumentCategory) => {
+    switch (category) {
+      case 'assurances':
+        return 'Assurances RC : +1 an';
+      case 'diplomes':
+        return 'Formations DPC : +3 ans';
+      case 'contrats':
+        return 'Contrats : +2 ans';
+      case 'fiscales':
+        return 'Déclarations fiscales : +1 an';
+      default:
+        return 'Durée suggérée : +1 an';
+    }
+  };
+
+  const handleExpirationCheckboxChange = (checked: boolean) => {
+    setNewDocument(prev => ({
+      ...prev,
+      hasExpirationDate: checked,
+      expirationDate: checked ? getSuggestedExpirationDate(prev.category || 'diplomes') : undefined
+    }));
+  };
+
+  // Fonctions pour les fonctionnalités avancées
+  const getFilteredAndSortedDocuments = (category: DocumentCategory) => {
+    let filtered = getDocumentsByCategory(category);
+
+    // Filtrage par recherche
+    if (searchQuery) {
+      filtered = filtered.filter(doc => 
+        doc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        doc.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        doc.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+      );
+    }
+
+    // Filtrage par statut d'expiration
+    if (filterExpiration !== 'all') {
+      filtered = filtered.filter(doc => {
+        if (!doc.hasExpirationDate) {
+          return filterExpiration === 'no-expiration';
+        }
+        
+        if (!doc.expirationDate) return false;
+        
+        const now = new Date();
+        const daysUntilExpiration = Math.ceil((doc.expirationDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+        
+        switch (filterExpiration) {
+          case 'expired':
+            return daysUntilExpiration < 0;
+          case 'expiring':
+            return daysUntilExpiration >= 0 && daysUntilExpiration <= 30;
+          case 'valid':
+            return daysUntilExpiration > 30;
+          default:
+            return true;
+        }
+      });
+    }
+
+    // Tri
+    filtered.sort((a, b) => {
+      switch (sortBy) {
+        case 'name':
+          return a.name.localeCompare(b.name);
+        case 'date':
+          return b.uploadDate.getTime() - a.uploadDate.getTime();
+        case 'expiration':
+          if (!a.hasExpirationDate && !b.hasExpirationDate) return 0;
+          if (!a.hasExpirationDate) return 1;
+          if (!b.hasExpirationDate) return -1;
+          if (!a.expirationDate || !b.expirationDate) return 0;
+          return a.expirationDate.getTime() - b.expirationDate.getTime();
+        default:
+          return 0;
+      }
+    });
+
+    return filtered;
+  };
+
+  const handleDownloadAllDocuments = (category: DocumentCategory) => {
+    const docs = getDocumentsByCategory(category);
+    alert(`Téléchargement de ${docs.length} documents de la catégorie ${getCategoryLabel(category)}...`);
+  };
+
+  const handleCheckExpirations = (category: DocumentCategory) => {
+    const docs = getDocumentsByCategory(category);
+    const expired = docs.filter(doc => doc.hasExpirationDate && doc.isExpired);
+    const expiring = docs.filter(doc => {
+      if (!doc.hasExpirationDate || !doc.expirationDate) return false;
+      const daysUntilExpiration = Math.ceil((doc.expirationDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
+      return daysUntilExpiration >= 0 && daysUntilExpiration <= 30;
+    });
+    
+    alert(`Rapport d'expiration pour ${getCategoryLabel(category)}:\n- ${expired.length} document(s) expiré(s)\n- ${expiring.length} document(s) expire(nt) bientôt`);
   };
 
   // Fonctions de gestion des organismes
@@ -657,6 +818,116 @@ export default function DentistCockpit() {
       window.open(url, '_blank');
     }
     setShowOrganismeModal(false);
+  };
+
+  // Fonctions pour la gestion des fichiers upload
+  const validateFile = (file: File): string | null => {
+    // Vérifier le format
+    const allowedTypes = [
+      'application/pdf',
+      'image/jpeg',
+      'image/jpg', 
+      'image/png',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' // .xlsx
+    ];
+    
+    if (!allowedTypes.includes(file.type)) {
+      return 'Format non supporté. Formats acceptés: PDF, JPG, PNG, DOCX, XLSX';
+    }
+    
+    // Vérifier la taille (10MB max)
+    const maxSize = 10 * 1024 * 1024; // 10MB
+    if (file.size > maxSize) {
+      return 'Fichier trop volumineux. Taille maximum: 10MB';
+    }
+    
+    return null;
+  };
+
+  const handleFileSelect = (file: File) => {
+    const error = validateFile(file);
+    if (error) {
+      setUploadError(error);
+      return;
+    }
+    
+    setUploadError(null);
+    setSelectedFile(file);
+    
+    // Auto-remplir le nom du document si vide
+    if (!newDocument.name) {
+      const fileName = file.name.replace(/\.[^/.]+$/, ""); // Supprimer l'extension
+      setNewDocument(prev => ({ ...prev, name: fileName }));
+    }
+  };
+
+  const handleDragEnter = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length > 1) {
+      setUploadError('Veuillez sélectionner un seul fichier');
+      return;
+    }
+    
+    if (files.length === 1) {
+      handleFileSelect(files[0]);
+    }
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      handleFileSelect(file);
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setSelectedFile(null);
+    setUploadError(null);
+  };
+
+  const handleChangeFile = () => {
+    const fileInput = document.getElementById('file-input') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  };
+
+  const formatFileSizeForUpload = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
+
+  const getFileIconForUpload = (file: File) => {
+    if (file.type === 'application/pdf') return File;
+    if (file.type.startsWith('image/')) return FileImage;
+    if (file.type.includes('wordprocessingml')) return FileText;
+    if (file.type.includes('spreadsheetml')) return FileSpreadsheet;
+    return FileType;
   };
 
   const kpis = [
@@ -1845,8 +2116,66 @@ export default function DentistCockpit() {
               </div>
             </div>
 
+            {/* Barre de recherche et filtres */}
+            <div className="mb-6 space-y-4">
+              <div className="flex items-center space-x-4">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Rechercher dans les documents..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  />
+                </div>
+                <select
+                  value={filterExpiration}
+                  onChange={(e) => setFilterExpiration(e.target.value as any)}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                >
+                  <option value="all">Tous les documents</option>
+                  <option value="expired">Expirés</option>
+                  <option value="expiring">Expire bientôt</option>
+                  <option value="valid">Valides</option>
+                  <option value="no-expiration">Sans expiration</option>
+                </select>
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as any)}
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                >
+                  <option value="name">Trier par nom</option>
+                  <option value="date">Trier par date</option>
+                  <option value="expiration">Trier par expiration</option>
+                </select>
+              </div>
+              
+              {/* Actions globales */}
+              <div className="flex items-center space-x-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleDownloadAllDocuments(selectedCategory!)}
+                  className="flex items-center space-x-2"
+                >
+                  <Download className="h-4 w-4" />
+                  <span>Télécharger tout</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleCheckExpirations(selectedCategory!)}
+                  className="flex items-center space-x-2"
+                >
+                  <AlertTriangle className="h-4 w-4" />
+                  <span>Vérifier expirations</span>
+                </Button>
+              </div>
+            </div>
+
             <div className="space-y-4">
-              {getDocumentsByCategory(selectedCategory).map((document) => {
+              {getFilteredAndSortedDocuments(selectedCategory).map((document) => {
                 const FileIcon = getFileIcon(document.fileType);
                 
                 return (
@@ -1865,7 +2194,7 @@ export default function DentistCockpit() {
                         <div className="flex items-center space-x-4 text-xs text-gray-500">
                           <span>Ajouté le {document.uploadDate.toLocaleDateString('fr-FR')}</span>
                           <span>{formatFileSize(document.fileSize)}</span>
-                          {document.expirationDate && (
+                          {document.hasExpirationDate && document.expirationDate && (
                             <span>Expire le {document.expirationDate.toLocaleDateString('fr-FR')}</span>
                           )}
                         </div>
@@ -1896,7 +2225,7 @@ export default function DentistCockpit() {
                 );
               })}
               
-              {getDocumentsByCategory(selectedCategory).length === 0 && (
+              {getFilteredAndSortedDocuments(selectedCategory).length === 0 && (
                 <div className="text-center py-8">
                   <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                   <p className="text-gray-500 mb-4">Aucun document dans cette catégorie</p>
@@ -1962,49 +2291,186 @@ export default function DentistCockpit() {
                 />
               </div>
 
-              {/* Date d'expiration */}
+              {/* Gestion optionnelle de la date d'expiration */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Date d'expiration
-                </label>
-                <input
-                  type="date"
-                  value={newDocument.expirationDate ? newDocument.expirationDate.toISOString().split('T')[0] : ''}
-                  onChange={(e) => setNewDocument(prev => ({ 
-                    ...prev, 
-                    expirationDate: e.target.value ? new Date(e.target.value) : undefined 
-                  }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Recommandé pour les assurances, contrats et certifications
+                <div className="flex items-center space-x-2 mb-3">
+                  <input
+                    type="checkbox"
+                    id="hasExpirationDate"
+                    checked={newDocument.hasExpirationDate || false}
+                    onChange={(e) => handleExpirationCheckboxChange(e.target.checked)}
+                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="hasExpirationDate" className="text-sm font-medium text-gray-700">
+                    Ce document a une date d'expiration
+                  </label>
+                </div>
+                <p className="text-xs text-gray-500 mb-3">
+                  Cochez si ce document nécessite un renouvellement
                 </p>
+                
+                {/* Champ date conditionnel avec animation */}
+                <div className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                  newDocument.hasExpirationDate 
+                    ? 'max-h-32 opacity-100' 
+                    : 'max-h-0 opacity-0'
+                }`}>
+                  <div className="pt-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                      <Calendar className="h-4 w-4 mr-1" />
+                      Date d'expiration
+                    </label>
+                    <input
+                      type="date"
+                      value={newDocument.expirationDate ? newDocument.expirationDate.toISOString().split('T')[0] : ''}
+                      onChange={(e) => setNewDocument(prev => ({ 
+                        ...prev, 
+                        expirationDate: e.target.value ? new Date(e.target.value) : undefined 
+                      }))}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    />
+                    <div className="mt-2 flex items-center justify-between">
+                      <p className="text-xs text-gray-500">
+                        {getSuggestedDurationText(newDocument.category || 'diplomes')}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setNewDocument(prev => ({
+                          ...prev,
+                          expirationDate: getSuggestedExpirationDate(prev.category || 'diplomes')
+                        }))}
+                        className="text-xs text-green-600 hover:text-green-700 font-medium"
+                      >
+                        Appliquer la suggestion
+                      </button>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Zone d'upload */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Fichier
+                  Fichier <span className="text-red-500">*</span>
                 </label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-green-400 transition-colors">
-                  <Upload className="h-8 w-8 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600 mb-1">Glisser-déposer votre fichier ici</p>
-                  <p className="text-xs text-gray-500">ou cliquer pour sélectionner</p>
-                  <p className="text-xs text-gray-400 mt-2">Formats acceptés: PDF, JPG, PNG, DOCX, XLSX (max 10MB)</p>
+                
+                {/* Input file caché */}
+                <input
+                  id="file-input"
+                  type="file"
+                  accept=".pdf,.jpg,.jpeg,.png,.docx,.xlsx"
+                  onChange={handleFileInputChange}
+                  className="hidden"
+                />
+                
+                {/* Zone de drag & drop / clic */}
+                <div
+                  className={`border-2 border-dashed rounded-lg p-6 text-center transition-all duration-200 cursor-pointer ${
+                    dragActive
+                      ? 'border-blue-500 bg-blue-50'
+                      : selectedFile
+                      ? 'border-green-400 bg-green-50'
+                      : 'border-gray-300 hover:border-green-400 hover:bg-gray-50'
+                  }`}
+                  onDragEnter={handleDragEnter}
+                  onDragLeave={handleDragLeave}
+                  onDragOver={handleDragOver}
+                  onDrop={handleDrop}
+                  onClick={!selectedFile ? handleChangeFile : undefined}
+                >
+                  {selectedFile ? (
+                    // État fichier sélectionné
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-center">
+                        {(() => {
+                          const FileIcon = getFileIconForUpload(selectedFile);
+                          return <FileIcon className="h-8 w-8 text-green-600" />;
+                        })()}
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900 mb-1">
+                          {selectedFile.name}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {formatFileSizeForUpload(selectedFile.size)} • Ajouté il y a quelques secondes
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-center space-x-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleChangeFile();
+                          }}
+                          className="text-xs"
+                        >
+                          Changer de fichier
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveFile();
+                          }}
+                          className="text-xs text-red-600 hover:text-red-700"
+                        >
+                          <X className="h-3 w-3 mr-1" />
+                          Supprimer
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    // État initial
+                    <div className="space-y-2">
+                      <Upload className={`h-8 w-8 mx-auto mb-2 ${
+                        dragActive ? 'text-blue-500' : 'text-gray-400'
+                      }`} />
+                      <p className={`text-sm mb-1 ${
+                        dragActive ? 'text-blue-600' : 'text-gray-600'
+                      }`}>
+                        {dragActive ? 'Déposez votre fichier ici' : 'Glisser-déposer votre fichier ici'}
+                      </p>
+                      <p className="text-xs text-gray-500">ou cliquer pour sélectionner</p>
+                      <p className="text-xs text-gray-400 mt-2">
+                        Formats acceptés: PDF, JPG, PNG, DOCX, XLSX (max 10MB)
+                      </p>
+                    </div>
+                  )}
                 </div>
+                
+                {/* Message d'erreur */}
+                {uploadError && (
+                  <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-md">
+                    <div className="flex items-center">
+                      <AlertTriangle className="h-4 w-4 text-red-600 mr-2" />
+                      <p className="text-sm text-red-800">{uploadError}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
             <div className="flex items-center justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
               <Button
                 variant="outline"
-                onClick={() => setShowAddDocumentModal(false)}
+                onClick={() => {
+                  setShowAddDocumentModal(false);
+                  // Réinitialiser les états de fichier
+                  setSelectedFile(null);
+                  setUploadError(null);
+                  setDragActive(false);
+                }}
               >
                 Annuler
               </Button>
               <Button
                 onClick={handleSaveDocument}
-                className="bg-green-600 hover:bg-green-700"
+                disabled={!selectedFile}
+                className="bg-green-600 hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
               >
                 Ajouter le document
               </Button>
