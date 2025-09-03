@@ -12,7 +12,8 @@ import {
   ArrowRight, Plus, Settings, Search, Filter, LogOut,
   MapPin, Phone, Mail, Award, Shield, CheckCircle,
   AlertTriangle, ExternalLink, Download, Upload, Edit3,
-  X, Save, Camera, Trash2, ChevronDown, Loader2
+  X, Save, Camera, Trash2, ChevronDown, Loader2,
+  GraduationCap, BookOpen, Briefcase, AlertCircle
 } from 'lucide-react';
 
 export default function DentistCockpit() {
@@ -42,6 +43,95 @@ export default function DentistCockpit() {
   // États pour les modals des organismes
   const [showOrganismeModal, setShowOrganismeModal] = useState(false);
   const [selectedOrganisme, setSelectedOrganisme] = useState<any>(null);
+  
+  // Types pour la timeline carrière
+  type TimelineEventType = 'diplome' | 'certification' | 'installation' | 'partenariat' | 'formation' | 'poste' | 'autre';
+  
+  interface TimelineEvent {
+    id: string;
+    date: Date;
+    type: TimelineEventType;
+    title: string;
+    location?: string;
+    description?: string;
+    createdAt: Date;
+    updatedAt: Date;
+  }
+  
+  // États pour la timeline carrière interactive
+  const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([
+    {
+      id: '1',
+      date: new Date('2025-01-01'),
+      type: 'poste',
+      title: 'Responsable Formation',
+      location: 'Centre République',
+      description: 'Poste actuel - Formation équipe implantologie',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: '2',
+      date: new Date('2023-06-01'),
+      type: 'certification',
+      title: 'Certification All-on-4',
+      location: 'Institut Malo',
+      description: 'Formation avancée implantologie',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: '3',
+      date: new Date('2018-09-01'),
+      type: 'partenariat',
+      title: 'Association Dr. Roussel',
+      location: 'Paris 11e',
+      description: 'Partage de cabinet - 50/50 parts',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: '4',
+      date: new Date('2015-03-01'),
+      type: 'formation',
+      title: 'Formation ITI Implantologie',
+      location: 'Suisse',
+      description: 'Spécialisation implants',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: '5',
+      date: new Date('2011-01-01'),
+      type: 'installation',
+      title: 'Installation Paris 11e',
+      location: 'Centre République',
+      description: 'Ouverture cabinet',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: '6',
+      date: new Date('2010-07-01'),
+      type: 'diplome',
+      title: 'Diplôme Chirurgien-Dentiste',
+      location: 'Université Lyon 1',
+      description: 'Mention Très Bien',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+  ]);
+  
+  const [showTimelineModal, setShowTimelineModal] = useState(false);
+  const [editingEvent, setEditingEvent] = useState<TimelineEvent | null>(null);
+  const [editingEventId, setEditingEventId] = useState<string | null>(null);
+  const [newEvent, setNewEvent] = useState<Partial<TimelineEvent>>({
+    date: new Date(),
+    type: 'formation',
+    title: '',
+    location: '',
+    description: ''
+  });
   
   // Liste des spécialités disponibles
   const availableSpecialties = [
@@ -110,6 +200,147 @@ export default function DentistCockpit() {
 
   const handleSpecialtyRemove = (specialty: string) => {
     setSpecialties(prev => prev.filter(s => s !== specialty));
+  };
+
+  // Fonctions pour la timeline carrière interactive
+  const getEventIcon = (type: TimelineEventType) => {
+    switch (type) {
+      case 'diplome': return GraduationCap;
+      case 'certification': return Star;
+      case 'installation': return MapPin;
+      case 'partenariat': return Users;
+      case 'formation': return BookOpen;
+      case 'poste': return Briefcase;
+      default: return Award;
+    }
+  };
+
+  const getEventTypeLabel = (type: TimelineEventType) => {
+    switch (type) {
+      case 'diplome': return 'Diplôme';
+      case 'certification': return 'Certification';
+      case 'installation': return 'Installation';
+      case 'partenariat': return 'Partenariat';
+      case 'formation': return 'Formation';
+      case 'poste': return 'Poste';
+      default: return 'Autre';
+    }
+  };
+
+  const getEventTypeColor = (type: TimelineEventType) => {
+    switch (type) {
+      case 'diplome': return 'bg-gray-500 border-gray-500';
+      case 'certification': return 'bg-blue-500 border-blue-500';
+      case 'installation': return 'bg-orange-500 border-orange-500';
+      case 'partenariat': return 'bg-purple-500 border-purple-500';
+      case 'formation': return 'bg-yellow-500 border-yellow-500';
+      case 'poste': return 'bg-green-500 border-green-500';
+      default: return 'bg-gray-500 border-gray-500';
+    }
+  };
+
+  const sortTimelineEvents = (events: TimelineEvent[]) => {
+    return [...events].sort((a, b) => b.date.getTime() - a.date.getTime());
+  };
+
+  const handleAddEvent = () => {
+    setNewEvent({
+      date: new Date(),
+      type: 'formation',
+      title: '',
+      location: '',
+      description: ''
+    });
+    setEditingEvent(null);
+    setShowTimelineModal(true);
+  };
+
+  const handleEditEvent = (event: TimelineEvent) => {
+    setEditingEvent(event);
+    setNewEvent({
+      date: event.date,
+      type: event.type,
+      title: event.title,
+      location: event.location || '',
+      description: event.description || ''
+    });
+    setShowTimelineModal(true);
+  };
+
+  const handleSaveEvent = () => {
+    if (!newEvent.title || newEvent.title.length < 3) {
+      alert('Le titre doit contenir au moins 3 caractères');
+      return;
+    }
+
+    if (!newEvent.date) {
+      alert('La date est obligatoire');
+      return;
+    }
+
+    const now = new Date();
+    
+    if (editingEvent) {
+      // Modification d'un événement existant
+      setTimelineEvents(prev => {
+        const updated = prev.map(event => 
+          event.id === editingEvent.id 
+            ? {
+                ...event,
+                date: newEvent.date!,
+                type: newEvent.type!,
+                title: newEvent.title!,
+                location: newEvent.location,
+                description: newEvent.description,
+                updatedAt: now
+              }
+            : event
+        );
+        return sortTimelineEvents(updated);
+      });
+    } else {
+      // Ajout d'un nouvel événement
+      const newTimelineEvent: TimelineEvent = {
+        id: Date.now().toString(),
+        date: newEvent.date!,
+        type: newEvent.type!,
+        title: newEvent.title!,
+        location: newEvent.location,
+        description: newEvent.description,
+        createdAt: now,
+        updatedAt: now
+      };
+      
+      setTimelineEvents(prev => sortTimelineEvents([...prev, newTimelineEvent]));
+    }
+
+    setShowTimelineModal(false);
+    setEditingEvent(null);
+    setNewEvent({
+      date: new Date(),
+      type: 'formation',
+      title: '',
+      location: '',
+      description: ''
+    });
+  };
+
+  const handleDeleteEvent = (eventId: string) => {
+    if (confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) {
+      setTimelineEvents(prev => prev.filter(event => event.id !== eventId));
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setShowTimelineModal(false);
+    setEditingEvent(null);
+    setNewEvent({
+      date: new Date(),
+      type: 'formation',
+      title: '',
+      location: '',
+      description: ''
+    });
   };
 
   // Fonctions de gestion des organismes
@@ -796,87 +1027,96 @@ export default function DentistCockpit() {
 
                 {/* Timeline Carrière Interactive */}
                 <div>
-                  <h4 className="font-semibold text-gray-900 mb-4 flex items-center">
-                    <Clock className="h-5 w-5 mr-2 text-green-600" />
-                    Timeline Carrière Interactive
-                  </h4>
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="font-semibold text-gray-900 flex items-center">
+                      <Clock className="h-5 w-5 mr-2 text-green-600" />
+                      Timeline Carrière Interactive
+                    </h4>
+                    <Button 
+                      onClick={handleAddEvent}
+                      size="sm" 
+                      variant="outline"
+                      className="flex items-center space-x-2 hover:bg-green-50 hover:border-green-300"
+                    >
+                      <Plus className="h-4 w-4" />
+                      <span>Ajouter un événement</span>
+                    </Button>
+                  </div>
+                  
                   <div className="relative">
                     <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-green-200"></div>
                     <div className="space-y-6">
-                      {[
-                        { 
-                          year: '2025', 
-                          title: 'Responsable Formation', 
-                          description: 'Poste actuel - Formation équipe implantologie',
-                          type: 'current',
-                          icon: Award
-                        },
-                        { 
-                          year: '2023', 
-                          title: 'Certification All-on-4', 
-                          description: 'Formation avancée implantologie - Institut Malo',
-                          type: 'certification',
-                          icon: Star
-                        },
-                        { 
-                          year: '2018', 
-                          title: 'Association Dr. Roussel', 
-                          description: 'Partage de cabinet - 50/50 parts',
-                          type: 'partnership',
-                          icon: Users
-                        },
-                        { 
-                          year: '2015', 
-                          title: 'Formation ITI Implantologie', 
-                          description: 'Spécialisation implants - Suisse',
-                          type: 'formation',
-                          icon: Award
-                        },
-                        { 
-                          year: '2011', 
-                          title: 'Installation Paris 11e', 
-                          description: 'Ouverture cabinet Centre République',
-                          type: 'installation',
-                          icon: MapPin
-                        },
-                        { 
-                          year: '2010', 
-                          title: 'Diplôme Chirurgien-Dentiste', 
-                          description: 'Université Lyon 1 - Mention Très Bien',
-                          type: 'diploma',
-                          icon: Award
-                        }
-                      ].map((item, index) => (
-                        <div key={index} className="relative flex items-start space-x-4">
-                          <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${
-                            item.type === 'current' ? 'bg-green-500 border-green-500 text-white' :
-                            item.type === 'certification' ? 'bg-blue-500 border-blue-500 text-white' :
-                            item.type === 'partnership' ? 'bg-purple-500 border-purple-500 text-white' :
-                            item.type === 'formation' ? 'bg-yellow-500 border-yellow-500 text-white' :
-                            item.type === 'installation' ? 'bg-orange-500 border-orange-500 text-white' :
-                            'bg-gray-500 border-gray-500 text-white'
-                          }`}>
-                            <item.icon className="h-4 w-4" />
-                          </div>
-                          <div className="flex-1 pb-6">
-                            <div className="flex items-center space-x-2 mb-1">
-                              <span className="text-lg font-bold text-gray-900">{item.year}</span>
-                              <Badge variant={
-                                item.type === 'current' ? 'default' :
-                                item.type === 'certification' ? 'secondary' : 'outline'
-                              } className="text-xs">
-                                {item.type === 'current' ? 'Actuel' :
-                                 item.type === 'certification' ? 'Certification' :
-                                 item.type === 'partnership' ? 'Partenariat' :
-                                 item.type === 'formation' ? 'Formation' :
-                                 item.type === 'installation' ? 'Installation' : 'Diplôme'}
-                              </Badge>
+                      {sortTimelineEvents(timelineEvents).map((event, index) => {
+                        const EventIcon = getEventIcon(event.type);
+                        const isCurrent = index === 0 && event.date.getFullYear() >= new Date().getFullYear();
+                        
+                        return (
+                          <div 
+                            key={event.id} 
+                            className="relative flex items-start space-x-4 group hover:bg-gray-50 p-3 rounded-lg transition-colors cursor-pointer"
+                            onDoubleClick={() => handleEditEvent(event)}
+                          >
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${getEventTypeColor(event.type)} ${
+                              isCurrent ? 'ring-2 ring-green-300 ring-opacity-50' : ''
+                            }`}>
+                              <EventIcon className="h-4 w-4 text-white" />
                             </div>
-                            <h5 className="font-semibold text-gray-800 mb-1">{item.title}</h5>
-                            <p className="text-sm text-gray-600">{item.description}</p>
+                            
+                            <div className="flex-1 pb-6">
+                              <div className="flex items-center justify-between mb-1">
+                                <div className="flex items-center space-x-2">
+                                  <span className="text-lg font-bold text-gray-900">
+                                    {event.date.getFullYear()}
+                                  </span>
+                                  <Badge variant={
+                                    isCurrent ? 'default' :
+                                    event.type === 'certification' ? 'secondary' : 'outline'
+                                  } className="text-xs">
+                                    {isCurrent ? 'Actuel' : getEventTypeLabel(event.type)}
+                                  </Badge>
+                                </div>
+                                
+                                {/* Boutons d'action au hover */}
+                                <div className="opacity-0 group-hover:opacity-100 transition-opacity flex items-center space-x-1">
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleEditEvent(event);
+                                    }}
+                                    className="h-6 w-6 p-0 hover:bg-blue-100"
+                                  >
+                                    <Edit3 className="h-3 w-3 text-blue-600" />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleDeleteEvent(event.id);
+                                    }}
+                                    className="h-6 w-6 p-0 hover:bg-red-100"
+                                  >
+                                    <Trash2 className="h-3 w-3 text-red-600" />
+                                  </Button>
+                                </div>
+                              </div>
+                              
+                              <h5 className="font-semibold text-gray-800 mb-1">{event.title}</h5>
+                              {event.location && (
+                                <p className="text-sm text-gray-500 mb-1 flex items-center">
+                                  <MapPin className="h-3 w-3 mr-1" />
+                                  {event.location}
+                                </p>
+                              )}
+                              {event.description && (
+                                <p className="text-sm text-gray-600">{event.description}</p>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
@@ -1176,6 +1416,121 @@ export default function DentistCockpit() {
         <div className="fixed top-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg z-50 flex items-center space-x-2">
           <Loader2 className="h-4 w-4 animate-spin" />
           <span>Sauvegarde...</span>
+        </div>
+      )}
+
+      {/* Modal Timeline Event */}
+      {showTimelineModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-semibold text-gray-900">
+                {editingEvent ? 'Modifier l\'événement' : 'Ajouter un événement'}
+              </h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCancelEdit}
+                className="h-8 w-8 p-0"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Date */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Date <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="date"
+                  value={newEvent.date ? newEvent.date.toISOString().split('T')[0] : ''}
+                  onChange={(e) => setNewEvent(prev => ({ ...prev, date: new Date(e.target.value) }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  required
+                />
+              </div>
+
+              {/* Type d'événement */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Type d'événement <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={newEvent.type || 'formation'}
+                  onChange={(e) => setNewEvent(prev => ({ ...prev, type: e.target.value as TimelineEventType }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                >
+                  <option value="diplome">🎓 Diplôme/Formation</option>
+                  <option value="certification">⭐ Certification</option>
+                  <option value="installation">📍 Installation/Ouverture</option>
+                  <option value="partenariat">👥 Partenariat/Association</option>
+                  <option value="formation">📚 Formation continue</option>
+                  <option value="poste">💼 Poste/Emploi</option>
+                  <option value="autre">🔖 Autre</option>
+                </select>
+              </div>
+
+              {/* Titre */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Nom/Titre <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={newEvent.title || ''}
+                  onChange={(e) => setNewEvent(prev => ({ ...prev, title: e.target.value }))}
+                  placeholder="Ex: Formation ITI Implantologie"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  required
+                />
+              </div>
+
+              {/* Lieu */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Lieu/Institution
+                </label>
+                <input
+                  type="text"
+                  value={newEvent.location || ''}
+                  onChange={(e) => setNewEvent(prev => ({ ...prev, location: e.target.value }))}
+                  placeholder="Ex: Institut Malo, Université Lyon 1"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+              </div>
+
+              {/* Description */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Description
+                </label>
+                <textarea
+                  value={newEvent.description || ''}
+                  onChange={(e) => setNewEvent(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Détails supplémentaires (optionnel)"
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end space-x-3 mt-6 pt-4 border-t border-gray-200">
+              <Button
+                variant="outline"
+                onClick={handleCancelEdit}
+              >
+                Annuler
+              </Button>
+              <Button
+                onClick={handleSaveEvent}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                {editingEvent ? 'Sauvegarder' : 'Ajouter'}
+              </Button>
+            </div>
+          </div>
         </div>
       )}
 
