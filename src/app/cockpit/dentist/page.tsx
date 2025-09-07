@@ -1798,45 +1798,58 @@ export default function DentistCockpit() {
 
           {/* Modules Secondaires */}
           <div className="space-y-6">
-            {modules.filter(m => m.id !== 'profil').map((module) => (
-              <Card key={module.id} className="hover:shadow-lg transition-all duration-300 cursor-pointer">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                        module.status === 'urgent' ? 'bg-red-100' :
-                        module.status === 'warning' ? 'bg-yellow-100' : 'bg-green-100'
-                      }`}>
-                        <module.icon className={`h-4 w-4 ${
-                          module.status === 'urgent' ? 'text-red-600' :
-                          module.status === 'warning' ? 'text-yellow-600' : 'text-green-600'
-                        }`} />
+            {modules.filter(m => m.id !== 'profil').map((module) => {
+              const ModuleCard = (
+                <Card className="hover:shadow-lg transition-all duration-300 cursor-pointer mb-6">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                          module.status === 'urgent' ? 'bg-red-100' :
+                          module.status === 'warning' ? 'bg-yellow-100' : 'bg-green-100'
+                        }`}>
+                          <module.icon className={`h-4 w-4 ${
+                            module.status === 'urgent' ? 'text-red-600' :
+                            module.status === 'warning' ? 'text-yellow-600' : 'text-green-600'
+                          }`} />
+                        </div>
+                        <div>
+                          <CardTitle className="text-base">{module.title}</CardTitle>
+                          <CardDescription className="text-xs">{module.description}</CardDescription>
+                        </div>
                       </div>
-                      <div>
-                        <CardTitle className="text-base">{module.title}</CardTitle>
-                        <CardDescription className="text-xs">{module.description}</CardDescription>
-                      </div>
+                      {module.notifications > 0 && (
+                        <Badge variant="destructive" className="text-xs">
+                          {module.notifications}
+                        </Badge>
+                      )}
                     </div>
-                    {module.notifications > 0 && (
-                      <Badge variant="destructive" className="text-xs">
-                        {module.notifications}
-                      </Badge>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-0">
-                  <div className="flex items-center justify-between">
-                    <Badge variant="outline" className="text-xs">
-                      {module.priority === 'high' ? 'Priorité Haute' :
-                       module.priority === 'medium' ? 'Priorité Moyenne' : 'Priorité Basse'}
-                    </Badge>
-                    <Button variant="ghost" size="sm">
-                      <ArrowRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <div className="flex items-center justify-end">
+                      <Button variant="ghost" size="sm">
+                        <ArrowRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+
+              // Navigation conditionnelle pour SOS Assistante
+              if (module.id === 'sos') {
+                return (
+                  <Link key={module.id} href="/cockpit/sos-assistante">
+                    {ModuleCard}
+                  </Link>
+                );
+              }
+
+              return (
+                <div key={module.id}>
+                  {ModuleCard}
+                </div>
+              );
+            })}
           </div>
         </div>
 
@@ -1852,11 +1865,13 @@ export default function DentistCockpit() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Button variant="outline" className="h-20 flex-col space-y-2 hover:bg-red-50 hover:border-red-200 transition-all">
-                  <Heart className="h-6 w-6 text-red-600" />
-                  <span className="text-sm font-medium">Mission Urgente</span>
-                  <span className="text-xs text-gray-500">SOS Assistante</span>
-                </Button>
+                <Link href="/cockpit/sos-assistante">
+                  <Button variant="outline" className="h-20 flex-col space-y-2 hover:bg-red-50 hover:border-red-200 transition-all w-full">
+                    <Heart className="h-6 w-6 text-red-600" />
+                    <span className="text-sm font-medium">Mission Urgente</span>
+                    <span className="text-xs text-gray-500">SOS Assistante</span>
+                  </Button>
+                </Link>
                 <Button variant="outline" className="h-20 flex-col space-y-2 hover:bg-blue-50 hover:border-blue-200 transition-all">
                   <Shield className="h-6 w-6 text-blue-600" />
                   <span className="text-sm font-medium">Connexion Organismes</span>

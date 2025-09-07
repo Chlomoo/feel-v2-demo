@@ -495,11 +495,7 @@ export default function DirectorCockpit() {
                   </div>
                 </CardHeader>
                 <CardContent className="pt-0">
-                  <div className="flex items-center justify-between">
-                    <Badge variant="outline" className="text-xs">
-                      {module.priority === 'high' ? 'Priorité Haute' :
-                       module.priority === 'medium' ? 'Priorité Moyenne' : 'Priorité Basse'}
-                    </Badge>
+                  <div className="flex items-center justify-end">
                     <Button variant="ghost" size="sm">
                       <ArrowRight className="h-4 w-4" />
                     </Button>
