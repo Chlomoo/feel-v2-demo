@@ -1,7 +1,4 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -15,15 +12,24 @@ import MissionCard from '@/components/sos-assistante/MissionCard';
 import CandidateCard from '@/components/sos-assistante/CandidateCard';
 import { SOSMission, DentalAssistant, MissionApplication } from '@/lib/sos-assistante/types';
 
-export default function MissionDetails() {
-  const params = useParams();
-  const missionId = params.id as string;
-  
-  const [mission, setMission] = useState<SOSMission | null>(null);
-  const [applications, setApplications] = useState<MissionApplication[]>([]);
-  const [selectedAssistant, setSelectedAssistant] = useState<DentalAssistant | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'candidates' | 'chat' | 'contract'>('overview');
-  const [isLoading, setIsLoading] = useState(true);
+// Fonction requise pour l'export statique
+export async function generateStaticParams() {
+  // Générer des paramètres statiques pour quelques missions de démonstration
+  return [
+    { id: 'mission-1' },
+    { id: 'mission-2' },
+    { id: 'mission-3' }
+  ];
+}
+
+interface MissionDetailsProps {
+  params: {
+    id: string;
+  };
+}
+
+export default function MissionDetails({ params }: MissionDetailsProps) {
+  const missionId = params.id;
 
   // Mock data pour la démonstration
   const mockMission: SOSMission = {
@@ -50,105 +56,10 @@ export default function MissionDetails() {
     applicationsCount: 3
   };
 
-  const mockApplications: MissionApplication[] = [
-    {
-      id: 'app-1',
-      missionId: missionId,
-      assistantId: 'assistant-1',
-      proposedRate: 42,
-      message: 'Bonjour, je suis disponible pour cette mission. J\'ai 5 ans d\'expérience en implantologie et chirurgie orale.',
-      matchingScore: 0.95,
-      status: 'pending',
-      appliedAt: new Date('2024-01-14T10:30:00'),
-      assistant: {
-        id: 'assistant-1',
-        userId: 'user-1',
-        firstName: 'Sophie',
-        lastName: 'Martin',
-        email: 'sophie.martin@email.com',
-        phone: '06 12 34 56 78',
-        skills: ['Implantologie', 'Chirurgie Orale', 'Stérilisation', 'Gestion des stocks', 'Parodontologie'],
-        experienceLevel: 'senior',
-        hourlyRateMin: 35,
-        hourlyRateMax: 50,
-        location: {
-          address: '12 rue de la Paix, 75011 Paris',
-          coordinates: [48.8566, 2.3522]
-        },
-        availability: {},
-        rating: 4.8,
-        missionsCompleted: 45,
-        verified: true,
-        verifiedAt: new Date('2023-06-01'),
-        photoUrl: '/logos/Logo Smile By Feel .png',
-        bio: 'Assistante dentaire expérimentée spécialisée en implantologie et chirurgie orale.',
-        certifications: ['HACCP', 'Stérilisation', 'Implantologie'],
-        languages: ['Français', 'Anglais'],
-        isOnline: true,
-        lastActiveAt: new Date('2024-01-14T11:00:00')
-      }
-    },
-    {
-      id: 'app-2',
-      missionId: missionId,
-      assistantId: 'assistant-2',
-      proposedRate: 48,
-      message: 'Je suis très intéressée par cette mission. J\'ai une excellente expérience en implantologie.',
-      matchingScore: 0.87,
-      status: 'pending',
-      appliedAt: new Date('2024-01-14T11:15:00'),
-      assistant: {
-        id: 'assistant-2',
-        userId: 'user-2',
-        firstName: 'Marie',
-        lastName: 'Dubois',
-        email: 'marie.dubois@email.com',
-        phone: '06 23 45 67 89',
-        skills: ['Implantologie', 'Prothèse', 'Endodontie', 'Stérilisation'],
-        experienceLevel: 'expert',
-        hourlyRateMin: 40,
-        hourlyRateMax: 60,
-        location: {
-          address: '8 avenue des Champs, 75011 Paris',
-          coordinates: [48.8566, 2.3522]
-        },
-        availability: {},
-        rating: 4.9,
-        missionsCompleted: 78,
-        verified: true,
-        verifiedAt: new Date('2023-03-15'),
-        photoUrl: '/logos/Logo Smile By Feel .png',
-        bio: 'Assistante dentaire expert avec plus de 10 ans d\'expérience.',
-        certifications: ['HACCP', 'Stérilisation', 'Implantologie', 'Prothèse'],
-        languages: ['Français', 'Anglais', 'Espagnol'],
-        isOnline: true,
-        lastActiveAt: new Date('2024-01-14T11:30:00')
-      }
-    }
-  ];
-
-  useEffect(() => {
-    // Simulation du chargement des données
-    const loadMissionData = async () => {
-      setIsLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setMission(mockMission);
-      setApplications(mockApplications);
-      setIsLoading(false);
-    };
-
-    loadMissionData();
-  }, [missionId]);
-
-  const handleSelectAssistant = (assistant: DentalAssistant) => {
-    setSelectedAssistant(assistant);
-    setActiveTab('contract');
-  };
-
-  const handleContactAssistant = (assistant: DentalAssistant) => {
-    // Ouvrir le chat avec l'assistante
-    setActiveTab('chat');
-  };
+  // Vérifier si la mission existe
+  if (!['mission-1', 'mission-2', 'mission-3'].includes(missionId)) {
+    notFound();
+  }
 
   const getUrgencyColor = (urgency: string) => {
     switch (urgency) {
@@ -185,31 +96,8 @@ export default function MissionDetails() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Chargement de la mission...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!mission) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <AlertTriangle className="h-12 w-12 text-red-500 mx-auto mb-4" />
-          <h1 className="text-xl font-semibold text-gray-900 mb-2">Mission non trouvée</h1>
-          <p className="text-gray-600 mb-4">Cette mission n'existe pas ou a été supprimée.</p>
-          <Link href="/cockpit/sos-assistante">
-            <Button>Retour au dashboard</Button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  // Données statiques pour la démonstration
+  const mission = mockMission;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -249,17 +137,16 @@ export default function MissionDetails() {
           <nav className="flex space-x-8">
             {[
               { id: 'overview', label: 'Vue d\'ensemble', icon: Heart },
-              { id: 'candidates', label: 'Candidatures', icon: Users, count: applications.length },
+              { id: 'candidates', label: 'Candidatures', icon: Users, count: 3 },
               { id: 'chat', label: 'Messages', icon: MessageCircle },
               { id: 'contract', label: 'Contrat', icon: FileText }
             ].map(tab => (
-              <button
+              <div
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
                 className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm ${
-                  activeTab === tab.id
+                  tab.id === 'overview'
                     ? 'border-red-500 text-red-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    : 'border-transparent text-gray-500'
                 }`}
               >
                 <tab.icon className="h-4 w-4" />
@@ -269,7 +156,7 @@ export default function MissionDetails() {
                     {tab.count}
                   </Badge>
                 )}
-              </button>
+              </div>
             ))}
           </nav>
         </div>
@@ -277,74 +164,71 @@ export default function MissionDetails() {
 
       {/* Contenu principal */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {activeTab === 'overview' && (
-          <div className="space-y-6">
-            {/* Carte de la mission */}
-            <MissionCard 
-              mission={mission} 
-              showActions={false}
-            />
+        <div className="space-y-6">
+          {/* Carte de la mission */}
+          <MissionCard 
+            mission={mission} 
+            showActions={false}
+          />
 
-            {/* Informations détaillées */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Calendar className="h-5 w-5 text-blue-500" />
-                    <span>Planning</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <Clock className="h-4 w-4" />
-                    <span>Date : {new Intl.DateTimeFormat('fr-FR', {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    }).format(mission.missionDate)}</span>
-                  </div>
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <Clock className="h-4 w-4" />
-                    <span>Heures : {mission.startTime} - {mission.endTime}</span>
-                  </div>
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <Clock className="h-4 w-4" />
-                    <span>Durée : {mission.durationHours} heures</span>
-                  </div>
-                </CardContent>
-              </Card>
+          {/* Informations détaillées */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Calendar className="h-5 w-5 text-blue-500" />
+                  <span>Planning</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <Clock className="h-4 w-4" />
+                  <span>Date : {new Intl.DateTimeFormat('fr-FR', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  }).format(mission.missionDate)}</span>
+                </div>
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <Clock className="h-4 w-4" />
+                  <span>Heures : {mission.startTime} - {mission.endTime}</span>
+                </div>
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <Clock className="h-4 w-4" />
+                  <span>Durée : {mission.durationHours} heures</span>
+                </div>
+              </CardContent>
+            </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <MapPin className="h-5 w-5 text-green-500" />
-                    <span>Localisation</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <MapPin className="h-4 w-4" />
-                    <span>{mission.location.address}</span>
-                  </div>
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
-                    <MapPin className="h-4 w-4" />
-                    <span>Rayon de recherche : {mission.location.radius} km</span>
-                  </div>
-                  <div className="h-48 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <p className="text-gray-500">Carte interactive (intégration Mapbox à venir)</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <MapPin className="h-5 w-5 text-green-500" />
+                  <span>Localisation</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <MapPin className="h-4 w-4" />
+                  <span>{mission.location.address}</span>
+                </div>
+                <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <MapPin className="h-4 w-4" />
+                  <span>Rayon de recherche : {mission.location.radius} km</span>
+                </div>
+                <div className="h-48 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <p className="text-gray-500">Carte interactive (intégration Mapbox à venir)</p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-        )}
 
-        {activeTab === 'candidates' && (
+          {/* Section candidatures */}
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-gray-900">
-                Candidatures reçues ({applications.length})
+                Candidatures reçues (3)
               </h2>
               <div className="flex items-center space-x-2">
                 <Button variant="outline" size="sm">
@@ -358,48 +242,16 @@ export default function MissionDetails() {
               </div>
             </div>
 
-            <div className="space-y-4">
-              {applications.map((application) => (
-                <CandidateCard
-                  key={application.id}
-                  candidate={application.assistant!}
-                  mission={mission}
-                  matchingScore={application.matchingScore}
-                  onContact={handleContactAssistant}
-                  onSelect={handleSelectAssistant}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'chat' && (
-          <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-gray-900">Messages</h2>
             <Card>
               <CardContent className="p-6">
                 <div className="text-center text-gray-500">
-                  <MessageCircle className="h-12 w-12 mx-auto mb-4" />
-                  <p>Interface de chat en cours de développement</p>
+                  <Users className="h-12 w-12 mx-auto mb-4" />
+                  <p>Interface de gestion des candidatures en cours de développement</p>
                 </div>
               </CardContent>
             </Card>
           </div>
-        )}
-
-        {activeTab === 'contract' && (
-          <div className="space-y-6">
-            <h2 className="text-xl font-semibold text-gray-900">Contrat</h2>
-            <Card>
-              <CardContent className="p-6">
-                <div className="text-center text-gray-500">
-                  <FileText className="h-12 w-12 mx-auto mb-4" />
-                  <p>Interface de contrat en cours de développement</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+        </div>
       </div>
     </div>
   );
